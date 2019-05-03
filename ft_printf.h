@@ -6,7 +6,7 @@
 /*   By: smorty <smorty@student.21school.ru>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/02 14:08:11 by smorty            #+#    #+#             */
-/*   Updated: 2019/05/02 22:51:20 by smorty           ###   ########.fr       */
+/*   Updated: 2019/05/03 23:01:19 by smorty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,25 +29,22 @@ enum			e_modifiers
 	NO, HH, H, L, LL
 };
 
-typedef struct	s_formatted
+typedef struct	s_frmt
 {
 	enum e_modifiers	mod;
-	short				minus;
-	short				plus;
-	short				space;
-	short				hash;
-	short				zero;
-	int					percision;
+	char				minus;
+	char				plus;
+	char				space;
+	char				hash;
+	char				zero;
+	int					precision;
 	int					width;
 	char				spec;
-}				t_formatted;
+}				t_frmt;
 
-void			initialize_struct(t_formatted *to_print);
-void			store_flag(const char **format, t_formatted *to_print);
-void			store_mod(const char **format, t_formatted *to_print);
-void			store_width(const char **format, t_formatted *to_print);
-void			store_percision(const char **format, t_formatted *to_print);
-int				print_number(t_formatted to_print, void *argp);
-int				print_ints(long long n, t_formatted to_print);
+int				parse_format(const char **format, va_list argp);
+int				print_integers(void *argp, t_frmt to_print);
+int				print_unsigned(void *argp, t_frmt params);
+int				print_chars(void *argp, t_frmt params);
 
 #endif
