@@ -6,7 +6,7 @@
 /*   By: smorty <smorty@student.21school.ru>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/02 16:11:46 by smorty            #+#    #+#             */
-/*   Updated: 2019/05/03 23:01:47 by smorty           ###   ########.fr       */
+/*   Updated: 2019/05/04 17:20:42 by smorty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,23 +65,6 @@ static void	get_mod(const char **format, t_frmt *params)
 	(*format)++;
 }
 
-static int		print_formatted(t_frmt params, va_list argp)
-{
-	if (params.spec == 'd' || params.spec == 'i')
-		return (print_integers(va_arg(argp, void *), params));
-	if (params.spec == 'u')
-		return (print_unsigned(va_arg(argp, void *), params));
-//	else if (S_816(params.spec))
-//		print_816(params, argp);
-//	else if (S_REA(params.spec))
-//		print_real(params, argp);
-	else if (S_CHA(params.spec))
-		return (print_chars(va_arg(argp, void *), params));
-//	else if (params.spec == 'p')
-//		print_pointer(params, argp);
-	return (0);
-}
-
 int			parse_format(const char **format, va_list argp)
 {
 	t_frmt params;
@@ -107,8 +90,8 @@ int			parse_format(const char **format, va_list argp)
 		else if (**format == 'h' || **format == 'l')
 			get_mod(format, &params);
 		else
-			return (print_chars((void *)*format, params));
+			return (print_char(**format, params));
 	}
 	params.spec = **format;
-	return (print_formatted(params, argp));
+	return (print_formatted(argp, params));
 }

@@ -6,7 +6,7 @@
 /*   By: smorty <smorty@student.21school.ru>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/02 14:55:41 by smorty            #+#    #+#             */
-/*   Updated: 2019/05/03 23:11:02 by smorty           ###   ########.fr       */
+/*   Updated: 2019/05/04 18:13:02 by smorty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,7 @@ int		ft_printf(const char *format, ...)
 #include <stdio.h>
 int main(void)
 {
-	ft_printf(">%100.40lld<\n", -8446744073709551614);
-	printf(">%100.40lld<\n", -8446744073709551614);
+	ft_printf(">%-100u<\n", 0);
+	printf(">%-100u<\n", 0);
 
 }

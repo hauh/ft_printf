@@ -6,7 +6,7 @@
 /*   By: smorty <smorty@student.21school.ru>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/02 14:08:11 by smorty            #+#    #+#             */
-/*   Updated: 2019/05/03 23:01:19 by smorty           ###   ########.fr       */
+/*   Updated: 2019/05/04 17:51:55 by smorty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,7 @@
 # define S_MSC(c) (c == 'p' || c == 'n')
 # define SPEC(c) (S_NUM(c) || S_816(c) || S_REA(c) || S_CHA(c) || S_MSC(c))
 # define FLAG(c) (c == '-' || c == '+' || c == ' ' || c == '#' || c == '0')
+
 
 enum			e_modifiers
 {
@@ -43,8 +44,14 @@ typedef struct	s_frmt
 }				t_frmt;
 
 int				parse_format(const char **format, va_list argp);
-int				print_integers(void *argp, t_frmt to_print);
+int				print_formatted(va_list argp, t_frmt params);
+int				print_number_base(long long n, t_frmt params, int base);
+int				print_number_base_u(unsigned long long n, t_frmt params, int base);
 int				print_unsigned(void *argp, t_frmt params);
-int				print_chars(void *argp, t_frmt params);
+int				print_char(const char c, t_frmt params);
+int				print_string(const char *s, t_frmt params);
+int				print_base(void *argp, t_frmt params);
+char			*ntoa_base(long long n, int base, t_frmt *params);
+char			*ntoa_base_u(unsigned long long n, int base, t_frmt *params);
 
 #endif

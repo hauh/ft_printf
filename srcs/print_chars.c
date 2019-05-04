@@ -6,13 +6,13 @@
 /*   By: smorty <smorty@student.21school.ru>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/03 19:49:39 by smorty            #+#    #+#             */
-/*   Updated: 2019/05/03 23:02:20 by smorty           ###   ########.fr       */
+/*   Updated: 2019/05/04 18:13:17 by smorty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_printf.h"
 
-static int	print_character(const char c, t_frmt params)
+int	print_char(const char c, t_frmt params)
 {
 	int		printed;
 	char	fill;
@@ -41,7 +41,7 @@ static int	print_character(const char c, t_frmt params)
 	return (printed);
 }
 
-static int	print_string(const char *s, t_frmt params)
+int	print_string(const char *s, t_frmt params)
 {
 	int		printed;
 	char	fill;
@@ -68,13 +68,4 @@ static int	print_string(const char *s, t_frmt params)
 		printed += write(1, s, ft_strlen(s));
 	}
 	return (printed);
-}
-
-int			print_chars(void *argp, t_frmt params)
-{
-	if (params.spec == 's')
-		return (print_string((const char *)argp, params));
-	if (params.spec == 'c')
-		return (print_character((const char)argp, params));
-	return (print_character(*(const char *)argp, params));
 }
