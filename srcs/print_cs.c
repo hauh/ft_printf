@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   print_chars.c                                      :+:      :+:    :+:   */
+/*   print_cs.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: smorty <smorty@student.21school.ru>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/03 19:49:39 by smorty            #+#    #+#             */
-/*   Updated: 2019/05/04 18:13:17 by smorty           ###   ########.fr       */
+/*   Updated: 2019/05/05 16:11:17 by smorty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,9 +15,7 @@
 int	print_char(const char c, t_frmt params)
 {
 	int		printed;
-	char	fill;
-
-	printed = 0;
+	char	fill;	printed = 0;
 	params.width--;
 	if (params.minus)
 	{
@@ -45,12 +43,18 @@ int	print_string(const char *s, t_frmt params)
 {
 	int		printed;
 	char	fill;
+	int		len;
 
+	if (!s)
+		return(write(1, "(null)", 6));
 	printed = 0;
-	params.width -= ft_strlen(s);
+	len = ft_strlen(s);
+	if (params.precision >= 0 && params.precision < len)
+		len = params.precision;
+	params.width -= len;
 	if (params.minus)
 	{
-		printed += write(1, s, ft_strlen(s));
+		printed += write(1, s, len);
 		while (params.width > 0)
 		{
 			printed += write(1, " ", 1);
@@ -65,7 +69,7 @@ int	print_string(const char *s, t_frmt params)
 			printed += write(1, &fill, 1);
 			params.width--;
 		}
-		printed += write(1, s, ft_strlen(s));
+		printed += write(1, s, len);
 	}
 	return (printed);
 }

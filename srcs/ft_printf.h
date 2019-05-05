@@ -6,7 +6,7 @@
 /*   By: smorty <smorty@student.21school.ru>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/02 14:08:11 by smorty            #+#    #+#             */
-/*   Updated: 2019/05/04 17:51:55 by smorty           ###   ########.fr       */
+/*   Updated: 2019/05/05 23:19:21 by smorty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 
 # include "libft/libft.h"
 # include <stdarg.h>
+# include <stdint.h>
 
 # define S_NUM(c) (c == 'd' || c == 'i' || c == 'u')
 # define S_816(c) (c == 'o' || c == 'x' || c == 'X')
@@ -27,7 +28,7 @@
 
 enum			e_modifiers
 {
-	NO, HH, H, L, LL
+	NO, HH, H, L, LL, J
 };
 
 typedef struct	s_frmt
@@ -45,13 +46,12 @@ typedef struct	s_frmt
 
 int				parse_format(const char **format, va_list argp);
 int				print_formatted(va_list argp, t_frmt params);
-int				print_number_base(long long n, t_frmt params, int base);
-int				print_number_base_u(unsigned long long n, t_frmt params, int base);
-int				print_unsigned(void *argp, t_frmt params);
+int				print_integer(intmax_t n, t_frmt params);
+int				print_unsigned_base(uintmax_t n, t_frmt params, char base);
 int				print_char(const char c, t_frmt params);
 int				print_string(const char *s, t_frmt params);
-int				print_base(void *argp, t_frmt params);
-char			*ntoa_base(long long n, int base, t_frmt *params);
-char			*ntoa_base_u(unsigned long long n, int base, t_frmt *params);
+int				find_max(int a, int b, int c);
+char			prefix_di(char *s, intmax_t n, t_frmt params);
+char			prefix_uox(char *s, uintmax_t n, t_frmt params);
 
 #endif
