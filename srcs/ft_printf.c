@@ -6,7 +6,7 @@
 /*   By: smorty <smorty@student.21school.ru>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/02 14:55:41 by smorty            #+#    #+#             */
-/*   Updated: 2019/05/04 18:13:02 by smorty           ###   ########.fr       */
+/*   Updated: 2019/05/05 23:24:36 by smorty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,7 @@ int		ft_printf(const char *format, ...)
 	va_end(argp);
 	return (printed);
 }
-
+/*
 #include <stdio.h>
 int main(void)
 {
@@ -44,3 +44,4 @@ int main(void)
 	printf(">%-100u<\n", 0);
 
 }
+*/
