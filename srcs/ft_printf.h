@@ -6,7 +6,7 @@
 /*   By: smorty <smorty@student.21school.ru>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/02 14:08:11 by smorty            #+#    #+#             */
-/*   Updated: 2019/05/05 23:19:21 by smorty           ###   ########.fr       */
+/*   Updated: 2019/05/06 15:07:52 by smorty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,13 +45,13 @@ typedef struct	s_frmt
 }				t_frmt;
 
 int				parse_format(const char **format, va_list argp);
-int				print_formatted(va_list argp, t_frmt params);
-int				print_integer(intmax_t n, t_frmt params);
-int				print_unsigned_base(uintmax_t n, t_frmt params, char base);
-int				print_char(const char c, t_frmt params);
-int				print_string(const char *s, t_frmt params);
+int				print_formatted(va_list argp, t_frmt *params);
+int				print_integer(intmax_t n, t_frmt *params);
+int				print_unsigned_base(uintmax_t n, t_frmt *params, char base);
+int				print_char(const char c, t_frmt *params);
+int				print_string(const char *s, t_frmt *params);
 int				find_max(int a, int b, int c);
-char			prefix_di(char *s, intmax_t n, t_frmt params);
-char			prefix_uox(char *s, uintmax_t n, t_frmt params);
+char			prefix_di(char *s, intmax_t n, t_frmt *params);
+char			prefix_uox(char *s, uintmax_t n, t_frmt *params);
 
 #endif
