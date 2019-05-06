@@ -6,18 +6,16 @@
 /*   By: smorty <smorty@student.21school.ru>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/04 16:27:53 by smorty            #+#    #+#             */
-/*   Updated: 2019/05/06 15:14:11 by smorty           ###   ########.fr       */
+/*   Updated: 2019/05/06 23:21:20 by smorty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_printf.h"
 
-static int		num_len(intmax_t n, int precision)
+static int	num_len_di(intmax_t n)
 {
 	int size;
 
-	if (!n && precision < 0)
-		return (1);
 	size = 0;
 	while (n)
 	{
@@ -27,73 +25,96 @@ static int		num_len(intmax_t n, int precision)
 	return (size);
 }
 
-static void		ntoa(char *s, intmax_t n, t_frmt *params)
+static void	ntoa(char *s, intmax_t n)
 {
-	if (!n && (*params).precision < 0)
-		*(s - 1) = '0';
-	else
+	if (n < 0)
 	{
-		while (n)
+		s--;
+		*s = n % 10 * -1 + '0';
+		n /= 10;
+		n *= -1;
+	}
+	while (n)
+	{
+		s--;
+		*s = n % 10 + '0';
+		n /= 10;
+	}
+}
+
+static void prefix_di(char *s, intmax_t n, t_frmt *params)
+{
+	if (n < 0)
+		*s = '-';
+	else if ((*params).plus)
+		*s = '+';
+	else if ((*params).space)
+		*s = ' ';
+}
+
+static void	ntoa_flag(char *s, intmax_t n, t_frmt *params, int size)
+{
+	int precision;
+	int prefix;
+	int len;
+
+	precision = (*params).precision;
+	prefix = (n < 0 || (*params).plus || (*params).space);
+	len = num_len_di(n);
+	if ((*params).minus)
+	{
+		if (precision > len)
 		{
-			s--;
-			*s = (n < 0 ? (n % 10) * -1 + '0' : n % 10 + '0');
-			if (*s > '9')
-				*s += ((*params).spec == 'x' ? 39 : 7);
-			n /= 10;
+			ft_memset(s + prefix, '0', precision - len);
+			ntoa(s + precision + prefix, n);
 		}
-	}
-}
-
-static void		ntoa_flag_minus(char *s, intmax_t n, t_frmt *params)
-{
-	int len;
-
-	len = num_len(n, (*params).precision);
-	s += prefix_di(s, n, params);
-	if ((*params).precision >= len)
-	{
-		ft_memset(s, '0', (*params).precision);
-		ntoa(s + (*params).precision, n, params);
+		else
+			ntoa(s + len + prefix, n);
+		prefix_di(s, n, params);
 	}
 	else
-		ntoa(s + len, n, params);
-}
-
-static void		ntoa_no_flag_minus(char *s, intmax_t n, t_frmt *params)
-{
-	int len;
-
-	len = num_len(n, (*params).precision);
-	if ((*params).precision >= len)
 	{
-		ft_memset(s - (*params).precision, '0', (*params).precision);
-		prefix_di(s - (*params).precision - 1, n, params);
+		s += size;
+		if (precision > len)
+			ft_memset(s - precision, '0', precision - len);
+		ntoa(s, n);
+		if (!(*params).zero)
+			prefix_di(s - (precision > len ? precision : len) - prefix, n, params);
 	}
-	else if (!(*params).zero)
-		prefix_di(s - len - 1, n, params);
-	ntoa(s, n, params);
 }
 
-int				print_integer(intmax_t n, t_frmt *params)
+int			print_di(intmax_t n, t_frmt *params)
 {
 	char	*s;
-	char	pref;
+	int		pref;
 	int		size;
 	int		printed;
+	int		precision;
 
-	if ((*params).minus || (*params).precision >= 0)
+	precision = (*params).precision;
+	if ((*params).minus || precision >= 0)
 		(*params).zero = 0;
 	pref = (n < 0 || (*params).plus || (*params).space);
-	size = num_len(n, (*params).precision);
-	size = find_max(size + pref, (*params).width, (*params).precision + pref);
+	size = find_max((n && precision ? num_len_di(n) : 1) + pref, (*params).width, precision + pref);
 	if (!(s = (char *)malloc(sizeof(char) * (size + 1))))
 		return (-1);
 	ft_memset(s, ((*params).zero ? '0' : ' '), size);
 	*(s + size) = 0;
-	if ((*params).minus)
-		ntoa_flag_minus(s, n, params);
+	if (n)
+		ntoa_flag(s, n, params, size);
 	else
-		ntoa_no_flag_minus(s + size, n, params);
+	{
+		if (precision)
+		{
+			*(s + size - 1) = '0';
+			prefix_di(s, n, params);
+		}
+		while (precision > 0)
+		{
+			*(s + precision) = '0';
+			precision--;
+		}
+	}
 	if ((*params).zero)
 		prefix_di(s, n, params);
 	printed = write(1, s, size);
