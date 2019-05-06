@@ -6,7 +6,7 @@
 /*   By: smorty <smorty@student.21school.ru>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/05 16:26:11 by smorty            #+#    #+#             */
-/*   Updated: 2019/05/05 23:13:13 by smorty           ###   ########.fr       */
+/*   Updated: 2019/05/06 15:06:29 by smorty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,19 +21,19 @@ int		find_max(int a, int b, int c)
 	return (c);
 }
 
-char	prefix_di(char *s, intmax_t n, t_frmt params)
+char	prefix_di(char *s, intmax_t n, t_frmt *params)
 {
 	if (n < 0)
 	{
 		*s = '-';
 		return (1);
 	}
-	if (params.plus)
+	if ((*params).plus)
 	{
 		*s = '+';
 		return (1);
 	}
-	if (params.space)
+	if ((*params).space)
 	{
 		*s = ' ';
 		return (1);
@@ -41,17 +41,17 @@ char	prefix_di(char *s, intmax_t n, t_frmt params)
 	return (0);
 }
 
-char	prefix_uox(char *s, uintmax_t n, t_frmt params)
+char	prefix_uox(char *s, uintmax_t n, t_frmt *params)
 {
-	if (params.hash && params.spec != 'u' && (n || params.spec == 'u'))
+	if ((*params).hash && (*params).spec != 'u' && (n || (*params).spec == 'u'))
 	{
 		*s = '0';
-		if (params.spec == 'x')
+		if ((*params).spec == 'x')
 		{
 			*(s + 1) = 'x';
 			return (2);
 		}
-		else if (params.spec == 'X')
+		else if ((*params).spec == 'X')
 		{	
 			*(s + 1) = 'X';
 			return (2);
