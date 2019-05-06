@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   print_uox.c                                        :+:      :+:    :+:   */
+/*   print_ox.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: smorty <smorty@student.21school.ru>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/05 14:41:22 by smorty            #+#    #+#             */
-/*   Updated: 2019/05/06 15:09:29 by smorty           ###   ########.fr       */
+/*   Updated: 2019/05/06 16:24:46 by smorty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ static int num_len_base(uintmax_t n, int precision, char base)
 
 static void		ntoa_base(char *s, uintmax_t n, t_frmt *params, char base)
 {
-	if (!n && (*params).precision < 0)
+	if ((!n && (*params).precision < 0) || ((*params).hash && base == 8))
 		*(s - 1) = '0';
 	else
 	{
@@ -74,7 +74,7 @@ static void	ntoa_base_no_flag_minus(char *s, uintmax_t n, t_frmt *params, char b
 	ntoa_base(s, n, params, base);
 }
 
-int		print_unsigned_base(uintmax_t n, t_frmt *params, char base)
+int		print_base(uintmax_t n, t_frmt *params, char base)
 {
 	char	*s;
 	char	pref;
@@ -83,7 +83,7 @@ int		print_unsigned_base(uintmax_t n, t_frmt *params, char base)
 
 	if ((*params).minus || (*params).precision >= 0)
 		(*params).zero = 0;
-	pref = (((*params).spec != 'u' && (*params).hash && n) ? 2 - ((*params).spec == 'o') : 0);
+	pref = (base != 10 && (*params).hash && (n || base == 8) ? 2 - ((*params).spec == 'o') : 0);
 	size = num_len_base(n, (*params).precision, base);
 	size = find_max(size + pref, (*params).width, (*params).precision + pref);
 	if (!(s = (char *)malloc(sizeof(char) * (size + 1))))
