@@ -6,70 +6,63 @@
 /*   By: smorty <smorty@student.21school.ru>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/03 19:49:39 by smorty            #+#    #+#             */
-/*   Updated: 2019/05/06 15:12:47 by smorty           ###   ########.fr       */
+/*   Updated: 2019/05/07 19:32:31 by smorty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_printf.h"
 
-int	print_char(const char c, t_frmt *params)
+int	print_char(const char argc, t_frmt *params)
 {
+	char	*s;
 	int		printed;
-	char	fill;	printed = 0;
-	(*params).width--;
+	int		size;
+
+	if ((*params).zero && (*params).minus)
+		(*params).zero = 0;
+	size = ((*params).width > 0 ? (*params).width : 1);
+	if (!(s = (char *)malloc(sizeof(char) * (size + 1))))
+		return (-1);
+	*(s + size) = 0;
+	ft_memset(s, ((*params).zero ? '0' : ' '), size);
 	if ((*params).minus)
-	{
-		printed += write(1, &c, 1);
-		while ((*params).width > 0)
-		{
-			printed += write(1, " ", 1);
-			(*params).width--;
-		}
-	}
+		*s = argc;
 	else
-	{
-		fill = ((*params).zero ? '0' : ' ');
-		while ((*params).width > 0)
-		{
-			printed += write(1, &fill, 1);
-			(*params).width--;
-		}
-		printed += write(1, &c, 1);
-	}
+		*(s + size - 1) = argc;
+	printed = write(1, s, size);
+	free(s);
 	return (printed);
 }
 
-int	print_string(const char *s, t_frmt *params)
+int	print_string(const char *args, t_frmt *params)
 {
+	char	*s;
 	int		printed;
-	char	fill;
+	int		size;
 	int		len;
 
-	if (!s)
-		return(write(1, "(null)", 6));
-	printed = 0;
-	len = ft_strlen(s);
-	if ((*params).precision >= 0 && (*params).precision < len)
-		len = (*params).precision;
-	(*params).width -= len;
+	if (!args)
+		return (write(1, "(null)", 6));
+	if ((*params).zero && ((*params).minus || (*params).precision >= 0))
+		(*params).zero = 0;
+	len = ft_strlen(args);
+	if ((*params).precision >= 0)
+		len = ((*params).precision > len ? len : (*params).precision);
+	size = ((*params).width > len ? (*params).width : len);
+	if (!(s = (char *)malloc(sizeof(char) * (size + 1))))
+		return (-1);
+	*(s + size) = 0;
+	ft_memset(s, ((*params).zero ? '0' : ' '), size);
 	if ((*params).minus)
-	{
-		printed += write(1, s, len);
-		while ((*params).width > 0)
-		{
-			printed += write(1, " ", 1);
-			(*params).width--;
-		}
-	}
+		s = ft_strncpy(s, args, len);
 	else
-	{
-		fill = ((*params).zero ? '0' : ' ');
-		while ((*params).width > 0)
+		while (len)
 		{
-			printed += write(1, &fill, 1);
-			(*params).width--;
+			*(s + size - len) = *args;
+			args++;
+			len--;
 		}
-		printed += write(1, s, len);
-	}
+	printed = write(1, s, size);
+	free(s);
 	return (printed);
 }
