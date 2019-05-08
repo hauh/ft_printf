@@ -6,7 +6,7 @@
 /*   By: smorty <smorty@student.21school.ru>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/02 14:08:11 by smorty            #+#    #+#             */
-/*   Updated: 2019/05/07 21:32:36 by smorty           ###   ########.fr       */
+/*   Updated: 2019/05/08 17:57:36 by smorty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,8 @@
 # define SPEC(c) (S_NUM(c) || S_816(c) || S_REA(c) || S_CHA(c) || S_MSC(c))
 # define FLAG(c) (c == '-' || c == '+' || c == ' ' || c == '#' || c == '0')
 # define MOD(c) (c == 'h' || c == 'l' || c == 'j' || c == 'z')
+# define MAX(a, b) (a > b ? a : b)
+# define MIN(a, b) (a < b ? a : b)
 
 enum			e_modifiers
 {
@@ -39,6 +41,7 @@ typedef struct	s_frmt
 	int					space;
 	int					hash;
 	int					zero;
+	int					flag_prec;
 	int					precision;
 	int					width;
 	int					spec;
@@ -51,8 +54,7 @@ int				print_d(intmax_t n, t_frmt *params);
 int				print_u(uintmax_t n, t_frmt *params);
 int				print_o(uintmax_t n, t_frmt *params);
 int				print_x(uintmax_t n, t_frmt *params);
-int				print_char(const char c, t_frmt *params);
-int				print_string(const char *s, t_frmt *params);
-int				find_max(int a, int b, int c);
+int				print_c(const char c, t_frmt *params);
+int				print_s(const char *s, t_frmt *params);
 
 #endif

@@ -6,7 +6,7 @@
 /*   By: smorty <smorty@student.21school.ru>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/02 16:11:46 by smorty            #+#    #+#             */
-/*   Updated: 2019/05/07 21:58:37 by smorty           ###   ########.fr       */
+/*   Updated: 2019/05/08 17:58:31 by smorty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,8 +20,9 @@ static void	initialize_struct(t_frmt *params)
 	(*params).hash = 0;
 	(*params).zero = 0;
 	(*params).mod = 0;
-	(*params).width = -1;
-	(*params).precision = -1;
+	(*params).width = 0;
+	(*params).flag_prec = 0;
+	(*params).precision = 1;
 	(*params).spec = 0;
 }
 
@@ -89,7 +90,8 @@ int			parse_format(const char **format, va_list argp)
 		else if (**format == '.')
 		{
 			(*format)++;
-			params.precision = ft_atoi(*format);
+			params.flag_prec = 1;
+			params.precision = ft_atoi(*format) + 1;
 			while (ft_isdigit(**format))
 				(*format)++;
 		}
@@ -101,7 +103,7 @@ int			parse_format(const char **format, va_list argp)
 			return (0);
 		}
 		else
-			return (print_char(**format, &params));
+			return (print_c(**format, &params));
 	}
 	params.spec = **format;
 	if (**format == 'U')

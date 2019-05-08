@@ -6,7 +6,7 @@
 /*   By: smorty <smorty@student.21school.ru>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/06 15:57:07 by smorty            #+#    #+#             */
-/*   Updated: 2019/05/07 19:33:21 by smorty           ###   ########.fr       */
+/*   Updated: 2019/05/08 17:32:43 by smorty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,7 @@ static void	utoa_flags(char *s, uintmax_t n, t_frmt *params, int size)
 	int precision;
 	int len;
 
-	precision = ((*params).precision > 0 ? (*params).precision : 1);
+	precision = (*params).precision - (*params).flag_prec;
 	len = num_len_u(n);
 	if ((*params).minus)
 	{
@@ -68,11 +68,10 @@ int			print_u(uintmax_t n, t_frmt *params)
 	int		printed;
 	int		precision;
 
-	if ((*params).zero && ((*params).minus || (*params).precision >= 0))
+	if ((*params).zero && ((*params).minus || (*params).flag_prec))
 		(*params).zero = 0;
-	precision = (*params).precision;
-	size = (!n && precision ? 1 : num_len_u(n));
-	size = find_max(size, (*params).width, precision);
+	precision = (*params).precision - (*params).flag_prec;
+	size = MAX(MAX(num_len_u(n), precision), (*params).width);
 	if (!(s = (char *)malloc(sizeof(char) * (size + 1))))
 		return (-1);
 	ft_memset(s, ((*params).zero ? '0' : ' '), size);

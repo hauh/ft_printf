@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   print_di.c                                         :+:      :+:    :+:   */
+/*   print_d.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: smorty <smorty@student.21school.ru>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/04 16:27:53 by smorty            #+#    #+#             */
-/*   Updated: 2019/05/07 21:32:43 by smorty           ###   ########.fr       */
+/*   Updated: 2019/05/08 17:47:34 by smorty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,32 +55,30 @@ static void	prefix_d(char *s, intmax_t n, t_frmt *params)
 static void	ntoa_flag(char *s, intmax_t n, t_frmt *params, int size)
 {
 	int precision;
-	int prf;
+	int prefix;
 	int len;
 
-	precision = ((*params).precision > 0 ? (*params).precision : 1);
-	prf = (n < 0 || (*params).plus || (*params).space);
+	precision = (*params).precision - (*params).flag_prec;
+	prefix = (n < 0 || (*params).plus || (*params).space);
 	len = num_len_d(n);
 	if ((*params).minus)
 	{
 		if (precision > len)
 		{
-			ft_memset(s + prf, '0', precision - len);
-			dtoa(s + precision + prf, n);
+			ft_memset(s + prefix, '0', precision - len);
+			dtoa(s + precision + prefix, n);
 		}
 		else
-			dtoa(s + len + prf, n);
+			dtoa(s + len + prefix, n);
 		prefix_d(s, n, params);
+		return ;
 	}
-	else
-	{
-		s += size;
-		if (precision > len)
-			ft_memset(s - precision, '0', precision - len);
-		dtoa(s, n);
-		if (!(*params).zero)
-			prefix_d(s - (precision > len ? precision : len) - prf, n, params);
-	}
+	s += size;
+	if (precision > len)
+		ft_memset(s - precision, '0', precision - len);
+	dtoa(s, n);
+	if (!(*params).zero)
+		prefix_d(s - (precision > len ? precision : len) - prefix, n, params);
 }
 
 int			print_d(intmax_t n, t_frmt *params)
@@ -91,12 +89,12 @@ int			print_d(intmax_t n, t_frmt *params)
 	int		printed;
 	int		precision;
 
-	if ((*params).zero && ((*params).minus || (*params).precision >= 0))
+	if ((*params).zero && ((*params).minus || (*params).flag_prec))
 		(*params).zero = 0;
-	precision = (*params).precision;
-	prefix = (n < 0 || (*params).plus || (*params).space);
-	size = (!n && precision ? 1 : num_len_d(n)) + prefix;
-	size = find_max(size, (*params).width, precision + prefix);
+	precision = (*params).precision - (*params).flag_prec;
+	prefix = (precision && (n < 0 || (*params).plus || (*params).space));
+	size = MAX(num_len_d(n), precision) + prefix;
+	size = MAX(size, (*params).width);
 	if (!(s = (char *)malloc(sizeof(char) * (size + 1))))
 		return (-1);
 	ft_memset(s, ((*params).zero ? '0' : ' '), size);

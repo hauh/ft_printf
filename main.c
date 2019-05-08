@@ -6,8 +6,6 @@
 
 int main(void)
 {
-	int *n;
-
-	ft_printf(">%p<\n", 0);
-	printf(">%p<\n", 0);
+	ft_printf("%i", 42);
+	printf("%i", 42);
 }
