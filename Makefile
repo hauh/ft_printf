@@ -6,13 +6,13 @@
 #    By: smorty <smorty@student.21school.ru>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2019/05/04 18:16:10 by smorty            #+#    #+#              #
-#    Updated: 2019/05/06 16:58:31 by smorty           ###   ########.fr        #
+#    Updated: 2019/05/07 21:32:47 by smorty           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME = libftprintf.a
 
-SRC = $(addprefix srcs/,ft_printf.c parse_format.c print_formatted.c print_cs.c print_di.c print_u.c print_o.c print_x.c utility.c libft/ft_atoi.c libft/ft_isdigit.c libft/ft_strlen.c libft/ft_memset.c)
+SRC = $(addprefix srcs/,ft_printf.c parse_format.c print_formatted.c print_cs.c print_d.c print_u.c print_o.c print_x.c utility.c libft/ft_atoi.c libft/ft_isdigit.c libft/ft_strlen.c libft/ft_strncpy.c libft/ft_memset.c)
 
 OBJ = ${SRC:.c=.o}
 

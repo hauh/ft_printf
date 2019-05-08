@@ -6,7 +6,7 @@
 /*   By: smorty <smorty@student.21school.ru>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/02 14:08:11 by smorty            #+#    #+#             */
-/*   Updated: 2019/05/06 22:15:51 by smorty           ###   ########.fr       */
+/*   Updated: 2019/05/07 21:32:36 by smorty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@
 
 enum			e_modifiers
 {
-	NO, HH, H, L, LL, J, Z
+	NO, HH, H, L, LL, Z, J
 };
 
 typedef struct	s_frmt
@@ -44,16 +44,15 @@ typedef struct	s_frmt
 	int					spec;
 }				t_frmt;
 
+int				ft_printf(const char *format, ...);
 int				parse_format(const char **format, va_list argp);
 int				print_formatted(va_list argp, t_frmt *params);
-int				print_di(intmax_t n, t_frmt *params);
+int				print_d(intmax_t n, t_frmt *params);
 int				print_u(uintmax_t n, t_frmt *params);
 int				print_o(uintmax_t n, t_frmt *params);
-int				print_base(uintmax_t n, t_frmt *params, char base);
+int				print_x(uintmax_t n, t_frmt *params);
 int				print_char(const char c, t_frmt *params);
 int				print_string(const char *s, t_frmt *params);
 int				find_max(int a, int b, int c);
-int				prefix_uox(char *s, uintmax_t n, t_frmt *params);
-int				num_len(intmax_t n, int precision);
 
 #endif

@@ -6,7 +6,7 @@
 /*   By: smorty <smorty@student.21school.ru>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/02 16:11:46 by smorty            #+#    #+#             */
-/*   Updated: 2019/05/06 16:53:04 by smorty           ###   ########.fr       */
+/*   Updated: 2019/05/07 21:58:37 by smorty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,9 +47,10 @@ static void	get_mod(const char **format, t_frmt *params)
 		if (*(*format + 1) == 'h')
 		{
 			(*format)++;
-			(*params).mod = HH;
+			if ((*params).mod < HH)
+				(*params).mod = HH;
 		}
-		else
+		else if ((*params).mod < H)
 			(*params).mod = H;
 	}
 	else if (**format == 'l')
@@ -57,15 +58,16 @@ static void	get_mod(const char **format, t_frmt *params)
 		if (*(*format + 1) == 'l')
 		{
 			(*format)++;
-			(*params).mod = LL;
+			if ((*params).mod < LL)
+				(*params).mod = LL;
 		}
-		else
+		else if ((*params).mod < L) 
 			(*params).mod = L;
 	}
-	else if (**format == 'j')
-		(*params).mod = J;
-	else
+	else if (**format == 'z' && (*params).mod < Z)
 		(*params).mod = Z;
+	else
+		(*params).mod = J;
 	(*format)++;
 }
 
@@ -93,6 +95,11 @@ int			parse_format(const char **format, va_list argp)
 		}
 		else if (MOD(**format))
 			get_mod(format, &params);
+		else if (**format == 0)
+		{
+			(*format)--;
+			return (0);
+		}
 		else
 			return (print_char(**format, &params));
 	}
