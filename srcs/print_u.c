@@ -6,24 +6,11 @@
 /*   By: smorty <smorty@student.21school.ru>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/06 15:57:07 by smorty            #+#    #+#             */
-/*   Updated: 2019/05/08 17:32:43 by smorty           ###   ########.fr       */
+/*   Updated: 2019/05/09 17:34:03 by smorty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_printf.h"
-
-static int	num_len_u(uintmax_t n)
-{
-	int size;
-
-	size = 0;
-	while (n)
-	{
-		n = n / 10;
-		size++;
-	}
-	return (size);
-}
 
 static void	utoa(char *s, uintmax_t n)
 {
@@ -35,14 +22,14 @@ static void	utoa(char *s, uintmax_t n)
 	}
 }
 
-static void	utoa_flags(char *s, uintmax_t n, t_frmt *params, int size)
+static void	utoa_flags(char *s, uintmax_t n, t_frmt *params, int flags, int size)
 {
 	int precision;
 	int len;
 
-	precision = (*params).precision - (*params).flag_prec;
-	len = num_len_u(n);
-	if ((*params).minus)
+	precision = (*params).precision - (flags & F_PREC);
+	len = num_len_base(n, 10);
+	if (flags & F_MINUS)
 	{
 		if (precision > len)
 		{
@@ -67,17 +54,19 @@ int			print_u(uintmax_t n, t_frmt *params)
 	int		size;
 	int		printed;
 	int		precision;
+	int		flags;
 
-	if ((*params).zero && ((*params).minus || (*params).flag_prec))
-		(*params).zero = 0;
-	precision = (*params).precision - (*params).flag_prec;
-	size = MAX(MAX(num_len_u(n), precision), (*params).width);
+	flags = (*params).flags;
+	if (flags & F_ZERO && (flags & F_MINUS || flags & F_PREC))
+		flags ^= F_ZERO;
+	precision = (*params).precision - (flags & F_PREC);
+	size = MAX(MAX(num_len_base(n, 10), precision), (*params).width);
 	if (!(s = (char *)malloc(sizeof(char) * (size + 1))))
 		return (-1);
-	ft_memset(s, ((*params).zero ? '0' : ' '), size);
+	ft_memset(s, (flags & F_ZERO ? '0' : ' '), size);
 	*(s + size) = 0;
 	if (n || precision)
-		utoa_flags(s, n, params, size);
+		utoa_flags(s, n, params, flags, size);
 	printed = write(1, s, size);
 	free(s);
 	return (printed);

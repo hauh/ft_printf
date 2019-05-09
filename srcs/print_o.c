@@ -6,7 +6,7 @@
 /*   By: smorty <smorty@student.21school.ru>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/06 16:58:45 by smorty            #+#    #+#             */
-/*   Updated: 2019/05/08 17:36:28 by smorty           ###   ########.fr       */
+/*   Updated: 2019/05/09 19:46:14 by smorty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,16 +37,16 @@ static void	otoa(char *s, uintmax_t n, int hash)
 		*(s - 1) = '0';
 }
 
-static void	otoa_flag(char *s, uintmax_t n, t_frmt *params, int size)
+static void	otoa_flag(char *s, uintmax_t n, t_frmt *params, int flags, int size)
 {
 	int precision;
 	int len;
 	int hash;
 
-	precision = (*params).precision - (*params).flag_prec;
-	hash = (*params).hash;
-	len = num_len_o(n);
-	if ((*params).minus)
+	precision = (*params).precision - (flags & F_PREC);
+	hash = (flags & F_HASH ? 1 : 0);
+	len = num_len_base(n, 8);
+	if (flags & F_MINUS)
 	{
 		if (precision > len)
 		{
@@ -71,18 +71,20 @@ int			print_o(uintmax_t n, t_frmt *params)
 	int		size;
 	int		printed;
 	int		precision;
+	int		flags;
 
-	if ((*params).zero && ((*params).minus || (*params).flag_prec))
-		(*params).zero = 0;
-	precision = (*params).precision - (*params).flag_prec;
-	size = MAX(num_len_o(n), precision) + (*params).hash;
+	flags = (*params).flags;
+	if (flags & F_ZERO && (flags & F_MINUS || flags & F_PREC))
+		flags ^= F_ZERO;
+	precision = (*params).precision - (flags & F_PREC);
+	size = MAX(num_len_base(n, 8) + (flags & F_HASH ? 1 : 0), precision);
 	size = MAX(size, (*params).width);
 	if (!(s = (char *)malloc(sizeof(char) * (size + 1))))
 		return (-1);
-	ft_memset(s, ((*params).zero ? '0' : ' '), size);
+	ft_memset(s, (flags & F_ZERO ? '0' : ' '), size);
 	*(s + size) = 0;
-	if (n || precision || (*params).hash)
-		otoa_flag(s, n, params, size);
+	if (n || precision || flags & F_HASH)
+		otoa_flag(s, n, params, flags, size);
 	printed = write(1, s, size);
 	free(s);
 	return (printed);
