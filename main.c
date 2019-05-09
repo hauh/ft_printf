@@ -1,14 +1,12 @@
 #include "srcs/ft_printf.h"
 #include <stdio.h>
 
-
-#include <stdio.h>
-
 int main(void)
 {
-	int *n;
+	wchar_t c1 = L'Ж';
+	wchar_t c2 = L'Œ';
 
-	n = NULL;
-	ft_printf("{%f}{%F}\n", 1.42, 1.42);
-	printf("{%f}{%F}\n", 1.42, 1.42);
+	ft_printf("%C", L'≠');
+//	ft_printf("%-05C<\n", c1);
+//	ft_printf("%-05C<\n", c2);
 }
