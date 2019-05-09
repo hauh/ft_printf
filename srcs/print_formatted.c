@@ -6,7 +6,7 @@
 /*   By: smorty <smorty@student.21school.ru>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/04 17:02:25 by smorty            #+#    #+#             */
-/*   Updated: 2019/05/08 17:58:21 by smorty           ###   ########.fr       */
+/*   Updated: 2019/05/09 19:32:15 by smorty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,24 +94,28 @@ static int	print_formatted_x(va_list argp, t_frmt *params)
 
 int			print_formatted(va_list argp, t_frmt *params)
 {
-	if ((*params).spec == 'd' || (*params).spec == 'i')
+	if ((*params).spec == 'd' || (*params).spec == 'i' || (*params).spec == 'D')
 		return (print_formatted_di(argp, params));
 	if ((*params).spec == 'u' || (*params).spec == 'U')
 		return (print_formatted_u(argp, params));
-	else if ((*params).spec == 'o')
+	if ((*params).spec == 'o' || (*params).spec == 'O')
 		return (print_formatted_o(argp, params));
-	else if ((*params).spec == 'x' || (*params).spec == 'X')
+	if ((*params).spec == 'x' || (*params).spec == 'X')
 		return (print_formatted_x(argp, params));
-	else if ((*params).spec == 'p')
+	if ((*params).spec == 'p')
 	{
-		(*params).hash = 2;
-		(*params).spec = 'x';
+		(*params).flags |= F_HASH;
 		return (print_x(va_arg(argp, intptr_t), params));
 	}
-	else if ((*params).spec == 'c')
+	if ((*params).spec == 'f' || (*params).spec == 'F')
+	{
+		if (!((*params).flags & F_PREC))
+			(*params).precision = 6;
+		return (print_f(va_arg(argp, double), params));
+	}
+	if ((*params).spec == 'c' || (*params).spec == 'C')
 		return (print_c((const char)va_arg(argp, int), params));
-	else if ((*params).spec == 's')
+	if ((*params).spec == 's')
 		return (print_s(va_arg(argp, const char *), params));
-	else
-		return (-1);	
+	return (-1);	
 }

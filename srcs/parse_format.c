@@ -6,7 +6,7 @@
 /*   By: smorty <smorty@student.21school.ru>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/02 16:11:46 by smorty            #+#    #+#             */
-/*   Updated: 2019/05/08 17:58:31 by smorty           ###   ########.fr       */
+/*   Updated: 2019/05/09 19:31:25 by smorty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,30 +14,36 @@
 
 static void	initialize_struct(t_frmt *params)
 {
-	(*params).minus = 0;
+/*	(*params).minus = 0;
 	(*params).plus = 0;
 	(*params).space = 0;
 	(*params).hash = 0;
 	(*params).zero = 0;
+	(*params).flag_prec = 0;*/
+	(*params).flags = 0;
 	(*params).mod = 0;
 	(*params).width = 0;
-	(*params).flag_prec = 0;
 	(*params).precision = 1;
 	(*params).spec = 0;
 }
 
-static void	get_flag(const char **format, t_frmt *params)
+static void	get_flag(const char **format, int *flags)
 {
 	if (**format == '-')
-		(*params).minus = 1;
+//		(*params).minus = 1;
+		*flags |= F_MINUS;
 	else if (**format == '+')
-		(*params).plus = 1;
+		*flags |= F_PLUS;
+//		(*params).plus = 1;
 	else if (**format == ' ')
-		(*params).space = 1;
+		*flags |= F_SPACE;
+//		(*params).space = 1;
 	else if (**format == '#')
-		(*params).hash = 1;
+		*flags |= F_HASH;
+//		(*params).hash = 1;
 	else if (**format == '0' && !ft_isdigit(*(*format - 1)))
-		(*params).zero = 1;
+		*flags |= F_ZERO;
+//		(*params).zero = 1;
 	(*format)++;
 }
 
@@ -80,7 +86,7 @@ int			parse_format(const char **format, va_list argp)
 	while (!SPEC(**format))
 	{
 		if (FLAG(**format))
-			get_flag(format, &params);
+			get_flag(format, &params.flags);
 		else if (ft_isdigit(**format) && **format != '0')
 		{
 			params.width = ft_atoi(*format);
@@ -90,7 +96,7 @@ int			parse_format(const char **format, va_list argp)
 		else if (**format == '.')
 		{
 			(*format)++;
-			params.flag_prec = 1;
+			params.flags |= F_PREC;
 			params.precision = ft_atoi(*format) + 1;
 			while (ft_isdigit(**format))
 				(*format)++;
@@ -106,7 +112,7 @@ int			parse_format(const char **format, va_list argp)
 			return (print_c(**format, &params));
 	}
 	params.spec = **format;
-	if (**format == 'U')
-		params.mod = L;
+	if (**format == 'D' || **format == 'U' || **format == 'O')
+		params.mod = J;
 	return (print_formatted(argp, &params));
 }

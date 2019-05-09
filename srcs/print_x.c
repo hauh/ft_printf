@@ -6,55 +6,62 @@
 /*   By: smorty <smorty@student.21school.ru>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/05 14:41:22 by smorty            #+#    #+#             */
-/*   Updated: 2019/05/08 17:51:15 by smorty           ###   ########.fr       */
+/*   Updated: 2019/05/09 19:43:57 by smorty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_printf.h"
 
-static int	num_len_x(uintmax_t n)
-{
-	int size;
-
-	size = 0;
-	while (n)
-	{
-		n = n / 16;
-		size++;
-	}
-	return (size);
-}
-
 static void	xtoa(char *s, uintmax_t n, int spec)
 {
-	while (n)
+	if (spec == 'X')
 	{
-		s--;
-		*s = n % 16;
-		*s += (*s < 10 ? '0' : spec - 33);
-		n /= 16;
+		while (n)
+		{
+			s--;
+			*s = n % 16;
+			*s += (*s < 10 ? '0' : 55);
+			n /= 16;
+		}
+	}
+	else
+	{
+		if (spec == 'p')
+			*(s + 1) = '0';
+		while (n)
+		{
+			s--;
+			*s = n % 16;
+			*s += (*s < 10 ? '0' : 87);
+			n /= 16;
+		}
 	}
 }
 
 static void	prefix_x(char *s, uintmax_t n, t_frmt *params)
 {
-	if (((*params).hash && n) || (*params).hash == 2)
+	if ((*params).spec == 'p')
+	{
+		*s = '0';
+		*(s + 1) = 'x';
+	}
+	else if ((*params).flags & F_HASH && n)
 	{
 		*s = '0';
 		*(s + 1) = (*params).spec;
 	}
 }
 
-static void	xtoa_flag(char *s, uintmax_t n, t_frmt *params, int size)
+static void	xtoa_flag(char *s, uintmax_t n, t_frmt *params, int flags, int size)
 {
 	int precision;
 	int len;
 	int hash;
 
-	precision = (*params).precision - (*params).flag_prec;
-	hash = ((*params).hash ? 2 : 0);
-	len = num_len_x(n);
-	if ((*params).minus)
+	precision = (*params).precision - (flags & F_PREC);
+	hash = (flags & F_HASH ? 2 : 0);
+	len = num_len_base(n, 16);
+	if (flags & F_MINUS)
 	{
 		if (precision > len)
 		{
@@ -70,7 +77,7 @@ static void	xtoa_flag(char *s, uintmax_t n, t_frmt *params, int size)
 	if (precision > len)
 		ft_memset(s - precision, '0', precision - len);
 	xtoa(s, n, (*params).spec);
-	if (!(*params).zero)
+	if (!(flags & F_ZERO))
 		prefix_x(s - (precision > len ? precision : len) - hash, n, params);
 }
 
@@ -81,22 +88,24 @@ int			print_x(uintmax_t n, t_frmt *params)
 	int		hash;
 	int		printed;
 	int		precision;
+	int		flags;
 
-	if ((*params).zero && ((*params).minus || (*params).flag_prec))
-		(*params).zero = 0;
-	precision = (*params).precision - (*params).flag_prec;
-	hash = (*params).hash;
-	size = MAX(num_len_x(n), precision);
+	flags = (*params).flags;
+	if (flags & F_ZERO && flags & (F_MINUS | F_PREC))
+		flags ^= F_ZERO;
+	precision = (*params).precision - (flags & F_PREC);
+	hash = ((*params).spec == 'p' ? 2 : flags & F_HASH);
+	size = MAX(num_len_base(n, 16), precision);
 	if ((n && hash && precision) || hash == 2)
 		size += 2;
 	size = MAX(size, (*params).width);
 	if (!(s = (char *)malloc(sizeof(char) * (size + 1))))
 		return (-1);
-	ft_memset(s, ((*params).zero ? '0' : ' '), size);
+	ft_memset(s, (flags & F_ZERO ? '0' : ' '), size);
 	*(s + size) = 0;
 	if (n || precision || hash == 2)
-		xtoa_flag(s, n, params, size);
-	if ((*params).zero && (n || hash == 2))
+		xtoa_flag(s, n, params, flags, size);
+	if (flags & F_ZERO && (n || hash == 2))
 		prefix_x(s, n, params);
 	printed = write(1, s, size);
 	free(s);

@@ -6,6 +6,9 @@
 
 int main(void)
 {
-	ft_printf("%i", 42);
-	printf("%i", 42);
+	int *n;
+
+	n = NULL;
+	ft_printf("{%f}{%F}\n", 1.42, 1.42);
+	printf("{%f}{%F}\n", 1.42, 1.42);
 }
