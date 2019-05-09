@@ -6,7 +6,7 @@
 /*   By: smorty <smorty@student.21school.ru>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/02 14:08:11 by smorty            #+#    #+#             */
-/*   Updated: 2019/05/09 19:32:31 by smorty           ###   ########.fr       */
+/*   Updated: 2019/05/09 22:51:02 by smorty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,7 +63,7 @@ int				print_u(uintmax_t n, t_frmt *params);
 int				print_o(uintmax_t n, t_frmt *params);
 int				print_x(uintmax_t n, t_frmt *params);
 int				print_f(double n, t_frmt *params);
-int				print_c(const char c, t_frmt *params);
+int				print_c(const wchar_t c, t_frmt *params);
 int				print_s(const char *s, t_frmt *params);
 int				num_len(intmax_t n);
 int				num_len_base(uintmax_t n, int base);

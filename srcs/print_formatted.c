@@ -6,7 +6,7 @@
 /*   By: smorty <smorty@student.21school.ru>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/04 17:02:25 by smorty            #+#    #+#             */
-/*   Updated: 2019/05/09 19:32:15 by smorty           ###   ########.fr       */
+/*   Updated: 2019/05/09 23:07:09 by smorty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -113,8 +113,14 @@ int			print_formatted(va_list argp, t_frmt *params)
 			(*params).precision = 6;
 		return (print_f(va_arg(argp, double), params));
 	}
-	if ((*params).spec == 'c' || (*params).spec == 'C')
+	if ((*params).spec == 'c')
+	{
+		if ((*params).mod == L || (*params).mod == LL)
+			return (print_c((const wchar_t)va_arg(argp, int), params));
 		return (print_c((const char)va_arg(argp, int), params));
+	}
+	if	((*params).spec == 'C')
+		return (print_c((const wchar_t)va_arg(argp, int), params));
 	if ((*params).spec == 's')
 		return (print_s(va_arg(argp, const char *), params));
 	return (-1);	
