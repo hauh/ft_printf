@@ -6,7 +6,7 @@
 /*   By: smorty <smorty@student.21school.ru>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/02 16:11:46 by smorty            #+#    #+#             */
-/*   Updated: 2019/05/09 23:03:52 by smorty           ###   ########.fr       */
+/*   Updated: 2019/05/10 20:43:30 by smorty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,7 @@ static void	initialize_struct(t_frmt *params)
 	(*params).width = 0;
 	(*params).precision = 1;
 	(*params).spec = 0;
+	(*params).fd = 1;
 }
 
 static void	get_flag(const char **format, int *flags)
