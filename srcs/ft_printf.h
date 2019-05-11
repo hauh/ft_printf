@@ -6,7 +6,7 @@
 /*   By: smorty <smorty@student.21school.ru>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/02 14:08:11 by smorty            #+#    #+#             */
-/*   Updated: 2019/05/10 21:56:07 by smorty           ###   ########.fr       */
+/*   Updated: 2019/05/11 18:35:30 by smorty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@
 # define S_INT(c) (c == 'i' || c == 'd' || c == 'D' || c == 'u' || c == 'U')
 # define S_816(c) (c == 'o' || c == 'O' || c == 'x' || c == 'X')
 # define S_REA(c) (c == 'f' || c == 'F' || c == 'e' || c == 'E' || c == 'g' || c == 'G')
-# define S_CHA(c) (c == 'c'	|| c == 's' || c == 'S' || c == 'C')
+# define S_CHA(c) (c == 'c'	|| c == 's' || c == 'S' || c == 'C' || c == 'L')
 # define S_MSC(c) (c == 'p' || c == 'n')
 # define SPEC(c) (S_INT(c) || S_816(c) || S_REA(c) || S_CHA(c) || S_MSC(c))
 # define FLAG(c) (c == '-' || c == '+' || c == ' ' || c == '#' || c == '0')
@@ -69,8 +69,10 @@ int				print_e(long double n, t_frmt *params);
 int				print_feg(long double n, t_frmt *params);
 int				print_c(const wchar_t c, t_frmt *params);
 int				print_s(const char *s, t_frmt *params);
+int				print_ws(const wchar_t *s, t_frmt *params);
 int				num_len(intmax_t n);
 int				num_len_base(uintmax_t n, int base);
+int				lensize(const wchar_t *s);
 void			ntoa(char *s, intmax_t n);
 void			fracttoa(char *s, long double n, int precision);
 void			prefix_f(char *s, long double n, int flags);

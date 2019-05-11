@@ -1,17 +1,15 @@
 #include "srcs/ft_printf.h"
 #include <stdio.h>
+#include <wchar.h>
 
 int main(void)
 {
 	double p = 373.85;
 	int n;
-//	wchar_t c1 = L'Ж';
-//	wchar_t c2 = L'Œ';
+	wchar_t c1 = L'Ж';
+	wchar_t c2 = L'Œ';
+	const wchar_t *r = L"我是一只猫。";
 
-	ft_printf(">%#+30.g<\n", 10000.03);
-	printf(">%#+30.g<\n", 10000.03);
-	ft_printf(">%#+-030.g<\n", 10000.03);
-	printf(">%#+-030.g<\n", 10000.03);
-//	ft_printf("%-05C<\n", c2);
 
-}
+	ft_printf("{% S}", L"(null)");
+	}
