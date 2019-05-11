@@ -6,7 +6,7 @@
 /*   By: smorty <smorty@student.21school.ru>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/09 17:25:04 by smorty            #+#    #+#             */
-/*   Updated: 2019/05/10 20:55:08 by smorty           ###   ########.fr       */
+/*   Updated: 2019/05/11 18:35:19 by smorty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,4 +90,24 @@ long double round_f(long double n, int precision)
 	else if (n < 0)
 		n -= t;
 	return (n);
+}
+
+int lensize(const wchar_t *s)
+{
+	int size;
+
+	size = 0;
+	while (*s)
+	{
+		if (*s <= 0x7F)
+			size++;
+		else if (*s <= 0x7FF)
+			size += 2;
+		else if (*s <= 0xFFFF)
+			size += 3;
+		else
+			size += 4;
+		s++;
+	}
+	return (size);
 }
