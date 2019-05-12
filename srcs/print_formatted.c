@@ -6,7 +6,7 @@
 /*   By: smorty <smorty@student.21school.ru>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/04 17:02:25 by smorty            #+#    #+#             */
-/*   Updated: 2019/05/11 17:21:42 by smorty           ###   ########.fr       */
+/*   Updated: 2019/05/12 21:22:41 by smorty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -107,29 +107,25 @@ int			print_formatted(va_list argp, t_frmt *params)
 		(*params).flags |= F_HASH;
 		return (print_x(va_arg(argp, intptr_t), params));
 	}
-	if ((*params).spec == 'f' || (*params).spec == 'F')
+	if (S_REA((*params).spec))
 	{
 		if (!((*params).flags & F_PREC))
 			(*params).precision = 6;
+		if ((*params).mod == LD)
+			return (print_feg(va_arg(argp, long double), params));
 		return (print_feg(va_arg(argp, double), params));
 	}
-	if (S_REA((*params).spec))
-		return (print_feg(va_arg(argp, double), params));
-	if ((*params).spec == 'c')
+	if ((*params).spec == 'c' || (*params).spec == 'C')
 	{
-		if ((*params).mod == L || (*params).mod == LL)
+		if ((*params).mod == L || (*params).mod == LL || (*params).spec == 'C')
 			return (print_c((const wchar_t)va_arg(argp, int), params));
 		return (print_c((const char)va_arg(argp, int), params));
 	}
-	if	((*params).spec == 'C')
-		return (print_c((const wchar_t)va_arg(argp, int), params));
-	if ((*params).spec == 's')
+	if ((*params).spec == 's' || (*params).spec == 'S')
 	{
-		if ((*params).mod == L || (*params).mod == LL)
+		if ((*params).mod == L || (*params).mod == LL || (*params).spec == 'S')
 			return (print_ws((const wchar_t *)va_arg(argp, const wchar_t *), params));	
 		return (print_s(va_arg(argp, const char *), params));
 	}
-	if ((*params).spec == 'S')
-		return (print_ws((const wchar_t *)va_arg(argp, const wchar_t *), params));	
 	return (-1);	
 }
