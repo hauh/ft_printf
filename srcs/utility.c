@@ -6,7 +6,7 @@
 /*   By: smorty <smorty@student.21school.ru>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/09 17:25:04 by smorty            #+#    #+#             */
-/*   Updated: 2019/05/11 18:35:19 by smorty           ###   ########.fr       */
+/*   Updated: 2019/05/12 22:19:31 by smorty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,33 +65,6 @@ void	ntoa(char *s, intmax_t n)
 	}
 }
 
-void	prefix_f(char *s, long double n, int flags)
-{
-	if (n < 0)
-		*s = '-';
-	else if (flags & F_PLUS)
-		*s = '+';
-	else if (flags & F_SPACE)
-		*s = ' ';
-}
-
-long double round_f(long double n, int precision)
-{
-	double t;
-
-	t = 0.5;
-	while (precision)
-	{
-		t /= 10;
-		precision--;
-	}
-	if (n > 0)
-		n += t;
-	else if (n < 0)
-		n -= t;
-	return (n);
-}
-
 int lensize(const wchar_t *s)
 {
 	int size;
@@ -111,3 +84,4 @@ int lensize(const wchar_t *s)
 	}
 	return (size);
 }
+

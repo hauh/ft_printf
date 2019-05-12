@@ -6,7 +6,7 @@
 /*   By: smorty <smorty@student.21school.ru>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/02 16:11:46 by smorty            #+#    #+#             */
-/*   Updated: 2019/05/11 22:49:15 by smorty           ###   ########.fr       */
+/*   Updated: 2019/05/12 22:58:13 by smorty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,8 +63,10 @@ static void	get_mod(const char **format, t_frmt *params)
 	}
 	else if (**format == 'z' && (*params).mod < Z)
 		(*params).mod = Z;
-	else
+	else if (**format == 'j')
 		(*params).mod = J;
+	else if (**format == 'L')
+		(*params).mod = LD;
 	(*format)++;
 }
 
@@ -86,29 +88,31 @@ int			parse_format(const char **format, va_list argp)
 		else if (**format == '.')
 		{
 			(*format)++;
-			params.flags |= F_PREC;
-			params.precision = ft_atoi(*format) + 1;
-			while (ft_isdigit(**format))
-				(*format)++;
-		}
-		else if (**format == '*')
-		{
-			if (*(*format - 1) == '.')
+			if (**format == '*')
 			{
-				params.flags |= F_PREC;
 				params.precision = va_arg(argp, int) + 1;
 				(*format)++;
 			}
 			else
 			{
-				params.width = va_arg(argp, int);
-				if (params.width < 0)
-				{
-					params.width = ~params.width + 1;
-					params.flags |= F_MINUS;
-				}
-				(*format)++;
+				params.precision = ft_atoi(*format) + 1;
+				while (ft_isdigit(**format))
+					(*format)++;
 			}
+			if (params.precision <= 0)
+				params.precision = 1;
+			else
+				params.flags |= F_PREC;
+		}
+		else if (**format == '*' && *(*format - 1) != '.')
+		{
+			params.width = va_arg(argp, int);
+			if (params.width < 0)
+			{
+				params.width = ~params.width + 1;
+				params.flags |= F_MINUS;
+			}
+			(*format)++;
 		}
 		else if (MOD(**format))
 			get_mod(format, &params);
