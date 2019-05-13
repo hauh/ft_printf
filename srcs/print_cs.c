@@ -6,7 +6,7 @@
 /*   By: smorty <smorty@student.21school.ru>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/03 19:49:39 by smorty            #+#    #+#             */
-/*   Updated: 2019/05/11 22:10:32 by smorty           ###   ########.fr       */
+/*   Updated: 2019/05/13 16:18:40 by smorty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,22 +49,22 @@ static int unicode(wchar_t c, char *code)
 	return (0);
 }
 
-static int putchar_unicode(wchar_t argch)
+static int putchar_unicode(wchar_t argch, int fd)
 {
 	char code[4];
 
 	if (argch <= 0x7F)
-		return(write(1, &argch, 1));
+		return(write(fd, &argch, 1));
 	if (argch <= 0x7FF)
-		return (write(1, code, unicode(argch, &code[0])));
+		return (write(fd, code, unicode(argch, &code[0])));
 	else if (argch <= 0xFFFF)
-		return (write(1, code, unicode(argch, &code[0])));
+		return (write(fd, code, unicode(argch, &code[0])));
 	else
-		return (write(1, code, unicode(argch, &code[0])));
+		return (write(fd, code, unicode(argch, &code[0])));
 	return (0);
 }
 
-int print_c(const wchar_t argch, t_frmt *params)
+int print_c(const wchar_t argch, t_frmt *prm)
 {
 	char	*s;
 	char	c[5];
@@ -72,24 +72,24 @@ int print_c(const wchar_t argch, t_frmt *params)
 	int		size;
 	int		flags;
 
-	flags = (*params).flags;
+	flags = prm->flags;
 	if (flags & F_ZERO && flags & F_MINUS)
 		flags ^= F_ZERO;
-	size = (*params).width - 1;
+	size = prm->width - 1;
 	if (size < 0)
-		return (putchar_unicode(argch));
+		return (putchar_unicode(argch, prm->fd));
 	if (!(s = (char *)malloc(sizeof(char) * size)))
 		return (-1);
 	ft_memset(s, (flags & F_ZERO ? '0' : ' '), size);
 	if (flags & F_MINUS)
-		printed = putchar_unicode(argch) + write(1, s, size);
+		printed = putchar_unicode(argch, prm->fd) + write(prm->fd, s, size);
 	else
-		printed = write(1, s, size) + putchar_unicode(argch);
+		printed = write(prm->fd, s, size) + putchar_unicode(argch, prm->fd);
 	free(s);
 	return (printed);
 }
 
-int	print_s(const char *args, t_frmt *params)
+int	print_s(const char *args, t_frmt *prm)
 {
 	char	*s;
 	int		printed;
@@ -97,15 +97,15 @@ int	print_s(const char *args, t_frmt *params)
 	int		len;
 	int		flags;
 
-	flags = (*params).flags;
+	flags = prm->flags;
 	if (!args)
 		args = "(null)";
 	if ((flags & (F_ZERO | F_MINUS)) == (F_ZERO | F_MINUS))
 		flags ^= F_ZERO;
 	len = ft_strlen(args);
 	if (flags & F_PREC)
-		len = MIN((*params).precision - (flags & F_PREC), len);
-	size = MAX((*params).width, len);
+		len = MIN(prm->precision - (flags & F_PREC), len);
+	size = MAX(prm->width, len);
 	if (!(s = (char *)malloc(sizeof(char) * (size + 1))))
 		return (-1);
 	ft_memset(s, (flags & F_ZERO ? '0' : ' '), size);
@@ -113,12 +113,12 @@ int	print_s(const char *args, t_frmt *params)
 		ft_strncpy(s, args, len);
 	else
 		ft_strncpy(s + size - len, args, len);
-	printed = write(1, s, size);
+	printed = write(prm->fd, s, size);
 	free(s);
 	return (printed);
 }
 
-int	print_ws(const wchar_t *args, t_frmt *params)
+int	print_ws(const wchar_t *args, t_frmt *prm)
 {
 	char	*s;
 	int		printed;
@@ -127,15 +127,15 @@ int	print_ws(const wchar_t *args, t_frmt *params)
 	int		len;
 	int		n;
 
-	flags = (*params).flags;
+	flags = prm->flags;
 	if (!args)
-		return (print_s("(null)", params));
+		return (print_s("(null)", prm));
 	if ((flags & (F_ZERO | F_MINUS)) == (F_ZERO | F_MINUS))
 		flags ^= F_ZERO;
 	len = lensize(args);
 	if (flags & F_PREC)
-		len = MIN((*params).precision - (flags & F_PREC), len);
-	size = MAX((*params).width, len);
+		len = MIN(prm->precision - (flags & F_PREC), len);
+	size = MAX(prm->width, len);
 	if (!(s = (char *)malloc(sizeof(char) * (size + 4))))
 		return (-1);
 	ft_memset(s, (flags & F_ZERO ? '0' : ' '), size);
@@ -162,13 +162,13 @@ int	print_ws(const wchar_t *args, t_frmt *params)
 		if (len < 0)
 			while (len + n > 0)
 			{
-				if ((*params).width)
-					printed += write(1, (flags & F_ZERO ? "0" : " "), 1);
+				if (prm->width)
+					printed += write(prm->fd, (flags & F_ZERO ? "0" : " "), 1);
 				n--;
 				size--;
 			}
 	}
-	printed += write(1, s, size);
+	printed += write(prm->fd, s, size);
 	free(s);
 	return (printed);
 }

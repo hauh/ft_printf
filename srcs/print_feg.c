@@ -6,13 +6,13 @@
 /*   By: smorty <smorty@student.21school.ru>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/12 18:18:09 by smorty            #+#    #+#             */
-/*   Updated: 2019/05/12 22:26:11 by smorty           ###   ########.fr       */
+/*   Updated: 2019/05/13 22:53:00 by smorty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_printf.h"
 
-int			get_exponent(long double *n)
+int					get_exponent(long double *n)
 {
 	int exponent;
 
@@ -32,7 +32,7 @@ int			get_exponent(long double *n)
 	return (exponent);
 }
 
-long double	round_f(long double n, int precision)
+long double			round_f(long double n, int precision)
 {
 	long double t;
 
@@ -49,7 +49,7 @@ long double	round_f(long double n, int precision)
 	return (n);
 }
 
-void		prefix_fe(char *s, long double n, int flags)
+void				prefix_fe(char *s, long double n, int flags)
 {
 	if (n < 0)
 		*s = '-';
@@ -59,10 +59,24 @@ void		prefix_fe(char *s, long double n, int flags)
 		*s = ' ';
 }
 
-void		fracttoa(char *s, double n, int precision)
+static void			round_fract(char *s)
 {
-	intmax_t t;
+	int diff;
 
+	diff = 1;
+	while (*s != '.' && diff)
+	{
+		s--;
+		(*s)++;
+		if (*s > '9')
+			*s = '0';
+		else
+			diff = 0;
+	}
+}
+
+void				fracttoa(char *s, double n, int precision)
+{
 	if (precision)
 	{
 		*s = '.';
@@ -70,43 +84,47 @@ void		fracttoa(char *s, double n, int precision)
 		precision--;
 		if (n < 0)
 			n *= -1;
-		t = n;
-		n -= t;
+		n -= (intmax_t)n;
 		while (precision)
 		{
-			t = n * 10;
-			*s = t + '0';
-			n = n * 10 - t;
+			n = n * 10;
+			*s = (int)n + '0';
+			n -= (int)n;
 			s++;
 			precision--;
 		}
+		n = n * 10;
+		if ((int)n >= 5)
+			round_fract(s);
 	}
 }
 
-int			print_feg(long double n, t_frmt *prm)
+int					print_feg(long double n, t_frmt *prm)
 {
-	long double e;
+	long double	e;
+	int			i;
 
 	if (!(prm->flags & F_PREC))
 		prm->precision = 6;
-	else if (prm->precision != 1)
+	if (prm->precision > 1)
 		prm->precision--;
 	if ((prm->flags & (F_ZERO | F_MINUS)) == (F_ZERO | F_MINUS))
 		prm->flags ^= F_ZERO;
+	e = n;
+	i = get_exponent(&e);
 	if (prm->spec == 'g' || prm->spec == 'G')
 	{
-		e = n;
-		e = get_exponent(&e);
-		if ((int)e < prm->precision && (int)e >= -4)
-			prm->precision -= (int)e + 1;
+		if (i < prm->precision && i >= -4)
+			prm->precision -= i;
 		else
-		{
 			prm->spec -= 2;
+		if (prm->precision > 0)
 			prm->precision--;
-		}
 	}
+	prm->len = (i < 0 ? -i : i) + 1;
+	if (prm->precision || prm->flags & F_HASH)
+		prm->precision++;
 	if (prm->spec == 'e' || prm->spec == 'E')
 		return (print_e(n, prm));
-	prm->len = num_len(n) + !(int)n;
 	return (print_f(n, prm));
 }
