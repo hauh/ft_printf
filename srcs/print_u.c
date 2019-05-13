@@ -6,7 +6,7 @@
 /*   By: smorty <smorty@student.21school.ru>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/06 15:57:07 by smorty            #+#    #+#             */
-/*   Updated: 2019/05/09 17:34:03 by smorty           ###   ########.fr       */
+/*   Updated: 2019/05/13 16:11:48 by smorty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,14 +22,14 @@ static void	utoa(char *s, uintmax_t n)
 	}
 }
 
-static void	utoa_flags(char *s, uintmax_t n, t_frmt *params, int flags, int size)
+static void	utoa_flags(char *s, uintmax_t n, t_frmt *prm, int size)
 {
 	int precision;
 	int len;
 
-	precision = (*params).precision - (flags & F_PREC);
-	len = num_len_base(n, 10);
-	if (flags & F_MINUS)
+	precision = prm->precision - (prm->flags & F_PREC);
+	len = prm->len;
+	if (prm->flags & F_MINUS)
 	{
 		if (precision > len)
 		{
@@ -48,26 +48,24 @@ static void	utoa_flags(char *s, uintmax_t n, t_frmt *params, int flags, int size
 	}
 }
 
-int			print_u(uintmax_t n, t_frmt *params)
+int			print_u(uintmax_t n, t_frmt *prm)
 {
 	char	*s;
 	int		size;
 	int		printed;
 	int		precision;
-	int		flags;
 
-	flags = (*params).flags;
-	if (flags & F_ZERO && (flags & F_MINUS || flags & F_PREC))
-		flags ^= F_ZERO;
-	precision = (*params).precision - (flags & F_PREC);
-	size = MAX(MAX(num_len_base(n, 10), precision), (*params).width);
+	if (prm->flags & F_ZERO && (prm->flags & (F_MINUS | F_PREC)))
+		prm->flags ^= F_ZERO;
+	precision = prm->precision - (prm->flags & F_PREC);
+	prm->len = num_len_base(n, 10);
+	size = MAX(MAX(prm->len, precision), prm->width);
 	if (!(s = (char *)malloc(sizeof(char) * (size + 1))))
 		return (-1);
-	ft_memset(s, (flags & F_ZERO ? '0' : ' '), size);
-	*(s + size) = 0;
+	ft_memset(s, (prm->flags & F_ZERO ? '0' : ' '), size);
 	if (n || precision)
-		utoa_flags(s, n, params, flags, size);
-	printed = write(1, s, size);
+		utoa_flags(s, n, prm, size);
+	printed = write(prm->fd, s, size);
 	free(s);
 	return (printed);
 }
