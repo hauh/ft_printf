@@ -6,7 +6,7 @@
 /*   By: smorty <smorty@student.21school.ru>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/12 18:18:09 by smorty            #+#    #+#             */
-/*   Updated: 2019/05/13 22:53:00 by smorty           ###   ########.fr       */
+/*   Updated: 2019/05/14 21:31:16 by smorty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@ int					get_exponent(long double *n)
 		*n *= 10;
 		exponent--;
 	}
-	while (*n > 10 || *n < -10)
+	while (*n >= 10 || *n <= -10)
 	{
 		*n /= 10;
 		exponent++;
@@ -49,7 +49,25 @@ long double			round_f(long double n, int precision)
 	return (n);
 }
 
-void				prefix_fe(char *s, long double n, int flags)
+void				trim_zeros(char *s, int *precision)
+{
+	if (*precision)
+	{
+		while (*s == '0')
+		{
+			*s = ' ';
+			s--;
+			(*precision)--;
+		}
+		if (*s == '.')
+		{
+			*s = ' ';
+			(*precision)--;
+		}
+	}
+}
+
+int					prefix_fe(char *s, long double n, int flags)
 {
 	if (n < 0)
 		*s = '-';
@@ -57,6 +75,9 @@ void				prefix_fe(char *s, long double n, int flags)
 		*s = '+';
 	else if (flags & F_SPACE)
 		*s = ' ';
+	else
+		return (0);
+	return (1);	
 }
 
 static void			round_fract(char *s)
@@ -79,9 +100,6 @@ void				fracttoa(char *s, double n, int precision)
 {
 	if (precision)
 	{
-		*s = '.';
-		s++;
-		precision--;
 		if (n < 0)
 			n *= -1;
 		n -= (intmax_t)n;
@@ -103,28 +121,31 @@ int					print_feg(long double n, t_frmt *prm)
 {
 	long double	e;
 	int			i;
+	char		spec;
 
+	spec = prm->spec;
 	if (!(prm->flags & F_PREC))
 		prm->precision = 6;
-	if (prm->precision > 1)
+	else if (prm->precision > 1)
 		prm->precision--;
 	if ((prm->flags & (F_ZERO | F_MINUS)) == (F_ZERO | F_MINUS))
 		prm->flags ^= F_ZERO;
 	e = n;
 	i = get_exponent(&e);
-	if (prm->spec == 'g' || prm->spec == 'G')
+	if (spec == 'g' || spec == 'G')
 	{
 		if (i < prm->precision && i >= -4)
 			prm->precision -= i;
 		else
-			prm->spec -= 2;
+			spec--;
 		if (prm->precision > 0)
 			prm->precision--;
+		spec--;
 	}
-	prm->len = (i < 0 ? -i : i) + 1;
-	if (prm->precision || prm->flags & F_HASH)
-		prm->precision++;
-	if (prm->spec == 'e' || prm->spec == 'E')
+	prm->len = i;
+	if (prm->len < 0)
+		prm->len = ~prm->len + 1;
+	if (spec == 'e' || spec == 'E')
 		return (print_e(n, prm));
 	return (print_f(n, prm));
 }
