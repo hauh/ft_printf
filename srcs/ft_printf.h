@@ -6,7 +6,7 @@
 /*   By: smorty <smorty@student.21school.ru>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/02 14:08:11 by smorty            #+#    #+#             */
-/*   Updated: 2019/05/13 21:04:57 by smorty           ###   ########.fr       */
+/*   Updated: 2019/05/14 22:28:13 by smorty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,11 +19,11 @@
 # include <wchar.h>
 
 # define S_INT(c) (c == 'i' || c == 'd' || c == 'D' || c == 'u' || c == 'U')
-# define S_816(c) (c == 'o' || c == 'O' || c == 'x' || c == 'X')
+# define S_BAS(c) (c == 'o' || c == 'O' || c == 'x' || c == 'X' || c == 'b' || c == 'B')
 # define S_REA(c) (c == 'f' || c == 'F' || c == 'e' || c == 'E' || c == 'g' || c == 'G')
 # define S_CHA(c) (c == 'c'	|| c == 'C' || c == 's' || c == 'S')
 # define S_MSC(c) (c == 'p' || c == 'n')
-# define SPEC(c) (S_INT(c) || S_816(c) || S_REA(c) || S_CHA(c) || S_MSC(c))
+# define SPEC(c) (S_INT(c) || S_BAS(c) || S_REA(c) || S_CHA(c) || S_MSC(c))
 # define FLAG(c) (c == '-' || c == '+' || c == ' ' || c == '#' || c == '0')
 # define MOD(c) (c == 'h' || c == 'l' || c == 'j' || c == 'z' || c == 'L')
 # define MAX(a, b) (a > b ? a : b)
@@ -43,12 +43,6 @@ enum			e_modifiers
 typedef struct	s_frmt
 {
 	enum e_modifiers	mod;
-/*	int					minus;
-	int					plus;
-	int					space;
-	int					hash;
-	int					zero;
-	int					flag_prec;*/
 	int					flags;
 	int					len;
 	int					precision;
@@ -64,6 +58,7 @@ int				print_d(intmax_t n, t_frmt *prm);
 int				print_u(uintmax_t n, t_frmt *prm);
 int				print_o(uintmax_t n, t_frmt *prm);
 int				print_x(uintmax_t n, t_frmt *prm);
+int				print_b(uintmax_t n, t_frmt *prm);
 int				print_f(long double n, t_frmt *prm);
 int				print_e(long double n, t_frmt *prm);
 int				print_feg(long double n, t_frmt *prm);
@@ -75,8 +70,10 @@ int				num_len_base(uintmax_t n, int base);
 int				lensize(const wchar_t *s);
 void			ntoa(char *s, intmax_t n);
 void			fracttoa(char *s, double n, int precision);
-void			prefix_fe(char *s, long double n, int flags);
+int				prefix_fe(char *s, long double n, int flags);
 long double		round_f(long double n, int precision);
 int				get_exponent(long double *n);
+void			trim_zeros(char *s, int *precision);
+int				print(char *out, char *width, t_frmt *prm);
 
 #endif

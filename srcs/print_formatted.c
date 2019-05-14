@@ -6,7 +6,7 @@
 /*   By: smorty <smorty@student.21school.ru>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/04 17:02:25 by smorty            #+#    #+#             */
-/*   Updated: 2019/05/12 21:22:41 by smorty           ###   ########.fr       */
+/*   Updated: 2019/05/14 21:33:48 by smorty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,7 +75,7 @@ static int	print_formatted_o(va_list argp, t_frmt *params)
 static int	print_formatted_x(va_list argp, t_frmt *params)
 {
 	if ((*params).mod == HH)
-		return (print_x((unsigned char )va_arg(argp, unsigned int), params));
+		return (print_x((unsigned char)va_arg(argp, unsigned int), params));
 	else if ((*params).mod == H)
 		return (print_x((unsigned short)va_arg(argp, unsigned int), params));
 	else if ((*params).mod == NO)
@@ -90,6 +90,26 @@ static int	print_formatted_x(va_list argp, t_frmt *params)
 		return (print_x(va_arg(argp, uintmax_t), params));
 	else
 		return (-1);
+
+}
+static int	print_formatted_b(va_list argp, t_frmt *params)
+{
+	if ((*params).mod == HH)
+		return (print_b((unsigned char)va_arg(argp, unsigned int), params));
+	else if ((*params).mod == H)
+		return (print_b((unsigned short)va_arg(argp, unsigned int), params));
+	else if ((*params).mod == NO)
+		return (print_b(va_arg(argp, unsigned int), params));
+	else if ((*params).mod == L)
+		return (print_b(va_arg(argp, unsigned long), params));
+	else if ((*params).mod == LL)
+		return (print_b(va_arg(argp, unsigned long long), params));
+	else if ((*params).mod == Z)
+		return (print_b(va_arg(argp, size_t), params));
+	else if ((*params).mod == J)
+		return (print_b(va_arg(argp, uintmax_t), params));
+	else
+		return (-1);
 }
 
 int			print_formatted(va_list argp, t_frmt *params)
@@ -102,6 +122,8 @@ int			print_formatted(va_list argp, t_frmt *params)
 		return (print_formatted_o(argp, params));
 	if ((*params).spec == 'x' || (*params).spec == 'X')
 		return (print_formatted_x(argp, params));
+	if ((*params).spec == 'b' || (*params).spec == 'B')
+		return (print_formatted_b(argp, params));
 	if ((*params).spec == 'p')
 	{
 		(*params).flags |= F_HASH;
@@ -109,8 +131,6 @@ int			print_formatted(va_list argp, t_frmt *params)
 	}
 	if (S_REA((*params).spec))
 	{
-		if (!((*params).flags & F_PREC))
-			(*params).precision = 6;
 		if ((*params).mod == LD)
 			return (print_feg(va_arg(argp, long double), params));
 		return (print_feg(va_arg(argp, double), params));

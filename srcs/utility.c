@@ -6,7 +6,7 @@
 /*   By: smorty <smorty@student.21school.ru>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/09 17:25:04 by smorty            #+#    #+#             */
-/*   Updated: 2019/05/13 15:33:47 by smorty           ###   ########.fr       */
+/*   Updated: 2019/05/14 22:29:30 by smorty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,3 +85,29 @@ int lensize(const wchar_t *s)
 	return (size);
 }
 
+int print(char *out, char *width, t_frmt *prm)
+{
+	int printed;
+
+	printed = 0;
+	if (prm->flags & F_MINUS)
+	{
+		printed += write(prm->fd, out, prm->len);
+		if (width)
+		{
+			printed += write(prm->fd, width, prm->width);
+			free(width);
+		}
+	}
+	else
+	{
+		if (width)
+		{
+			printed += write(prm->fd, width, prm->width);
+			free(width);
+		}
+		printed += write(prm->fd, out, prm->len);
+	}
+	free(out);
+	return (printed);
+}
