@@ -6,11 +6,29 @@
 /*   By: smorty <smorty@student.21school.ru>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/06 15:57:07 by smorty            #+#    #+#             */
-/*   Updated: 2019/05/13 16:11:48 by smorty           ###   ########.fr       */
+/*   Updated: 2019/05/15 21:00:07 by smorty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_printf.h"
+
+static int	num_len_u(uintmax_t n)
+{
+	uintmax_t	d;
+	int			size;
+
+	if (!n)
+		return (0);
+	size = 1;
+	n /= 10;
+	d = 1;
+	while (d <= n)
+	{
+		d *= 10;
+		size++;
+	}
+	return (size);
+}
 
 static void	utoa(char *s, uintmax_t n)
 {
@@ -48,24 +66,26 @@ static void	utoa_flags(char *s, uintmax_t n, t_frmt *prm, int size)
 	}
 }
 
-int			print_u(uintmax_t n, t_frmt *prm)
+void		print_u(uintmax_t n, t_frmt *prm)
 {
-	char	*s;
+	char	*out;
 	int		size;
-	int		printed;
 	int		precision;
 
 	if (prm->flags & F_ZERO && (prm->flags & (F_MINUS | F_PREC)))
 		prm->flags ^= F_ZERO;
 	precision = prm->precision - (prm->flags & F_PREC);
-	prm->len = num_len_base(n, 10);
+	prm->len = num_len_u(n);
 	size = MAX(MAX(prm->len, precision), prm->width);
-	if (!(s = (char *)malloc(sizeof(char) * (size + 1))))
-		return (-1);
-	ft_memset(s, (prm->flags & F_ZERO ? '0' : ' '), size);
+	if (!(out = (char *)malloc(sizeof(char) * (size + 1))))
+	{
+		error();
+		return ;
+	}
+	ft_memset(out, (prm->flags & F_ZERO ? '0' : ' '), size);
 	if (n || precision)
-		utoa_flags(s, n, prm, size);
-	printed = write(prm->fd, s, size);
-	free(s);
-	return (printed);
+		utoa_flags(out, n, prm, size);
+	*(out + size) = 0;
+	move_to_buf(out);
+	free(out);
 }

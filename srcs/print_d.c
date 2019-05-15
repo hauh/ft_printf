@@ -6,7 +6,7 @@
 /*   By: smorty <smorty@student.21school.ru>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/04 16:27:53 by smorty            #+#    #+#             */
-/*   Updated: 2019/05/13 16:15:38 by smorty           ###   ########.fr       */
+/*   Updated: 2019/05/15 17:14:39 by smorty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,13 +51,12 @@ static void	dtoa_flag(char *s, intmax_t n, t_frmt *prm, int flags, int size)
 		prefix_d(s - (precision > len ? precision : len) - prefix, n, flags);
 }
 
-int			print_d(intmax_t n, t_frmt *prm)
+void		print_d(intmax_t n, t_frmt *prm)
 {
-	char	*s;
+	char	*out;
 	int		prefix;
 	int		size;
 	int		flags;
-	int		printed;
 	int		precision;
 
 	flags = prm->flags;
@@ -67,15 +66,17 @@ int			print_d(intmax_t n, t_frmt *prm)
 	prefix = (precision && (n < 0 || flags & F_PLUS || flags & F_SPACE));
 	size = MAX(num_len(n), precision) + prefix;
 	size = MAX(size, prm->width);
-	if (!(s = (char *)malloc(sizeof(char) * (size + 1))))
-		return (-1);
-	ft_memset(s, (flags & F_ZERO ? '0' : ' '), size);
-	*(s + size) = 0;
+	if (!(out = (char *)malloc(sizeof(char) * (size + 1))))
+	{
+		error();
+		return ;
+	}
+	ft_memset(out, (flags & F_ZERO ? '0' : ' '), size);
 	if (n || precision)
-		dtoa_flag(s, n, prm, flags, size);
+		dtoa_flag(out, n, prm, flags, size);
 	if (flags & F_ZERO)
-		prefix_d(s, n, flags);
-	printed = write(prm->fd, s, size);
-	free(s);
-	return (printed);
+		prefix_d(out, n, flags);
+	*(out + size) = 0;
+	move_to_buf(out);
+	free(out);
 }

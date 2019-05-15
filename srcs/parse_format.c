@@ -6,7 +6,7 @@
 /*   By: smorty <smorty@student.21school.ru>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/02 16:11:46 by smorty            #+#    #+#             */
-/*   Updated: 2019/05/12 22:58:13 by smorty           ###   ########.fr       */
+/*   Updated: 2019/05/15 19:25:34 by smorty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,7 +70,7 @@ static void	get_mod(const char **format, t_frmt *params)
 	(*format)++;
 }
 
-int			parse_format(const char **format, va_list argp)
+void			parse_format(const char **format, va_list argp)
 {
 	t_frmt params;
 
@@ -119,13 +119,16 @@ int			parse_format(const char **format, va_list argp)
 		else if (**format == 0)
 		{
 			(*format)--;
-			return (0);
+			return ;
 		}
 		else
-			return (print_c(**format, &params));
+		{
+			print_c(**format, &params);
+			return ;
+		}
 	}
 	params.spec = **format;
 	if (**format == 'D' || **format == 'U' || **format == 'O')
 		params.mod = J;
-	return (print_formatted(argp, &params));
+	print_formatted(argp, &params);
 }

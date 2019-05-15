@@ -6,7 +6,7 @@
 /*   By: smorty <smorty@student.21school.ru>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/09 15:53:23 by smorty            #+#    #+#             */
-/*   Updated: 2019/05/14 19:34:19 by smorty           ###   ########.fr       */
+/*   Updated: 2019/05/15 17:02:07 by smorty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,7 +71,7 @@ static void	floattoa(char *s, long double n, t_frmt *prm)
 	*(s + precision) = 0;
 }
 
-int print_f(long double n, t_frmt *prm)
+void		print_f(long double n, t_frmt *prm)
 {
 	char *out;
 	char *width;
@@ -80,17 +80,12 @@ int print_f(long double n, t_frmt *prm)
 	prefix = (n < 0 || prm->flags & (F_PLUS | F_SPACE));
 	prm->len = prm->len + prm->precision + prefix;
 	if (!(out = (char *)malloc(sizeof(char) * prm->len)))
-		return (-1);
+		error();
 	floattoa(out, n, prm);
 	prm->len = ft_strlen(out);
+	width = NULL;
 	if (prm->width > prm->len)
-	{
-		prm->width -= prm->len;
-		if (!(width = (char *)malloc(sizeof(char) * prm->width)))
-			return (-1);
-		ft_memset(width, (prm->flags & F_ZERO ? '0' : ' '), prm->width);
-	}
-	else
-		width = NULL;
-	return (print(out, width, prm));
+		if (!(width = get_width(prm)))
+			error();
+	print(out, width, prm);
 }
