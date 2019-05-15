@@ -6,7 +6,7 @@
 /*   By: smorty <smorty@student.21school.ru>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/09 17:25:04 by smorty            #+#    #+#             */
-/*   Updated: 2019/05/14 22:29:30 by smorty           ###   ########.fr       */
+/*   Updated: 2019/05/15 20:27:54 by smorty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,24 +30,6 @@ int		num_len(intmax_t n)
 	return (size);
 }
 
-int		num_len_base(uintmax_t n, int base)
-{
-	uintmax_t	d;
-	int			size;
-
-	if (!n)
-		return (0);
-	size = 1;
-	n /= base;
-	d = 1;
-	while (d <= n)
-	{
-		d *= base;
-		size++;
-	}
-	return (size);
-}
-
 void	ntoa(char *s, intmax_t n)
 {
 	if (n < 0)
@@ -65,49 +47,46 @@ void	ntoa(char *s, intmax_t n)
 	}
 }
 
-int lensize(const wchar_t *s)
+char *get_width(t_frmt *prm)
 {
-	int size;
+	char *width;
 
-	size = 0;
-	while (*s)
-	{
-		if (*s <= 0x7F)
-			size++;
-		else if (*s <= 0x7FF)
-			size += 2;
-		else if (*s <= 0xFFFF)
-			size += 3;
-		else
-			size += 4;
-		s++;
-	}
-	return (size);
+	prm->width -= prm->len;
+	if (!(width = (char *)malloc(sizeof(char) * (prm->width + 1))))
+		return (NULL);
+	ft_memset(width, (prm->flags & F_ZERO ? '0' : ' '), prm->width);
+	*(width + prm->width) = 0;
+	return (width);
 }
 
-int print(char *out, char *width, t_frmt *prm)
+void move_to_buf(char *s)
 {
-	int printed;
+	while (*s)
+	{
+		*(g_buf + g_len) = *s;
+		++s;
+		++g_len;
+		if (g_len == BUFF_SIZE)
+			print_buf();
+	}
+}
 
-	printed = 0;
-	if (prm->flags & F_MINUS)
+void print(char *out, char *width, t_frmt *prm)
+{
+	if (!(prm->flags & F_MINUS) && width)
 	{
-		printed += write(prm->fd, out, prm->len);
-		if (width)
-		{
-			printed += write(prm->fd, width, prm->width);
-			free(width);
-		}
+		move_to_buf(width);
+		free(width);
 	}
-	else
+	if (out)
 	{
-		if (width)
-		{
-			printed += write(prm->fd, width, prm->width);
-			free(width);
-		}
-		printed += write(prm->fd, out, prm->len);
+		*(out + prm->len) = 0;
+		move_to_buf(out);
+		free(out);
 	}
-	free(out);
-	return (printed);
+	if ((prm->flags & F_MINUS) && width)
+	{
+		move_to_buf(width);
+		free(width);
+	}
 }

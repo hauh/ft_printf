@@ -6,146 +6,138 @@
 /*   By: smorty <smorty@student.21school.ru>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/04 17:02:25 by smorty            #+#    #+#             */
-/*   Updated: 2019/05/14 21:33:48 by smorty           ###   ########.fr       */
+/*   Updated: 2019/05/15 21:04:43 by smorty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_printf.h"
 
-static int	print_formatted_di(va_list argp, t_frmt *params)
+static void	print_formatted_di(va_list argp, t_frmt *params)
 {
 	if ((*params).mod == HH)
-		return (print_d((char)va_arg(argp, int), params));
-	else if ((*params).mod == H)
-		return (print_d((short)va_arg(argp, int), params));
-	else if ((*params).mod == NO)
-		return (print_d(va_arg(argp, int), params));
-	else if ((*params).mod == L)
-		return (print_d(va_arg(argp, long), params));
-	else if ((*params).mod == LL)
-		return (print_d(va_arg(argp, long long), params));
-	else if ((*params).mod == Z)
-		return (print_d(va_arg(argp, ssize_t), params));
-	else if ((*params).mod == J)
-		return (print_d(va_arg(argp, intmax_t), params));
-	else
-		return (-1);
+		print_d((char)va_arg(argp, int), params);
+	if ((*params).mod == H)
+		print_d((short)va_arg(argp, int), params);
+	if ((*params).mod == NO)
+		print_d(va_arg(argp, int), params);
+	if ((*params).mod == L)
+		print_d(va_arg(argp, long), params);
+	if ((*params).mod == LL)
+		print_d(va_arg(argp, long long), params);
+	if ((*params).mod == Z)
+		print_d(va_arg(argp, ssize_t), params);
+	if ((*params).mod == J)
+		print_d(va_arg(argp, intmax_t), params);
 }
 
-static int	print_formatted_u(va_list argp, t_frmt *params)
+static void	print_formatted_u(va_list argp, t_frmt *params)
 {
 	if ((*params).mod == HH)
-		return (print_u((unsigned char)va_arg(argp, unsigned int), params));
-	else if ((*params).mod == H)
-		return (print_u((unsigned short)va_arg(argp, unsigned int), params));
-	else if ((*params).mod == NO)
-		return (print_u(va_arg(argp, unsigned int), params));
-	else if ((*params).mod == L)
-		return (print_u(va_arg(argp, unsigned long), params));
-	else if ((*params).mod == LL)
-		return (print_u(va_arg(argp, unsigned long long), params));
-	else if ((*params).mod == Z)
-		return (print_u(va_arg(argp, size_t), params));
-	else if ((*params).mod == J)
-		return (print_u(va_arg(argp, uintmax_t), params));
-	else
-		return (-1);
+		print_u((unsigned char)va_arg(argp, unsigned int), params);
+	if ((*params).mod == H)
+		print_u((unsigned short)va_arg(argp, unsigned int), params);
+	if ((*params).mod == NO)
+		print_u(va_arg(argp, unsigned int), params);
+	if ((*params).mod == L)
+		print_u(va_arg(argp, unsigned long), params);
+	if ((*params).mod == LL)
+		print_u(va_arg(argp, unsigned long long), params);
+	if ((*params).mod == Z)
+		print_u(va_arg(argp, size_t), params);
+	if ((*params).mod == J)
+		print_u(va_arg(argp, uintmax_t), params);
 }
 
-static int	print_formatted_o(va_list argp, t_frmt *params)
+static void	print_formatted_o(va_list argp, t_frmt *params)
 {
 	if ((*params).mod == HH)
-		return (print_o((unsigned char)va_arg(argp, unsigned int), params));
-	else if ((*params).mod == H)
-		return (print_o((unsigned short)va_arg(argp, unsigned int), params));
-	else if ((*params).mod == NO)
-		return (print_o(va_arg(argp, unsigned int), params));
-	else if ((*params).mod == L)
-		return (print_o(va_arg(argp, unsigned long), params));
-	else if ((*params).mod == LL)
-		return (print_o(va_arg(argp, unsigned long long), params));
-	else if ((*params).mod == Z)
-		return (print_o(va_arg(argp, size_t), params));
-	else if ((*params).mod == J)
-		return (print_o(va_arg(argp, uintmax_t), params));
-	else
-		return (-1);
+		print_o((unsigned char)va_arg(argp, unsigned int), params);
+	if ((*params).mod == H)
+		print_o((unsigned short)va_arg(argp, unsigned int), params);
+	if ((*params).mod == NO)
+		print_o(va_arg(argp, unsigned int), params);
+	if ((*params).mod == L)
+		print_o(va_arg(argp, unsigned long), params);
+	if ((*params).mod == LL)
+		print_o(va_arg(argp, unsigned long long), params);
+	if ((*params).mod == Z)
+		print_o(va_arg(argp, size_t), params);
+	if ((*params).mod == J)
+		print_o(va_arg(argp, uintmax_t), params);
 }
 
-static int	print_formatted_x(va_list argp, t_frmt *params)
+static void	print_formatted_x(va_list argp, t_frmt *params)
 {
 	if ((*params).mod == HH)
-		return (print_x((unsigned char)va_arg(argp, unsigned int), params));
-	else if ((*params).mod == H)
-		return (print_x((unsigned short)va_arg(argp, unsigned int), params));
-	else if ((*params).mod == NO)
-		return (print_x(va_arg(argp, unsigned int), params));
-	else if ((*params).mod == L)
-		return (print_x(va_arg(argp, unsigned long), params));
-	else if ((*params).mod == LL)
-		return (print_x(va_arg(argp, unsigned long long), params));
-	else if ((*params).mod == Z)
-		return (print_x(va_arg(argp, size_t), params));
-	else if ((*params).mod == J)
-		return (print_x(va_arg(argp, uintmax_t), params));
-	else
-		return (-1);
-
+		print_x((unsigned char)va_arg(argp, unsigned int), params);
+	if ((*params).mod == H)
+		print_x((unsigned short)va_arg(argp, unsigned int), params);
+	if ((*params).mod == NO)
+		print_x(va_arg(argp, unsigned int), params);
+	if ((*params).mod == L)
+		print_x(va_arg(argp, unsigned long), params);
+	if ((*params).mod == LL)
+		print_x(va_arg(argp, unsigned long long), params);
+	if ((*params).mod == Z)
+		print_x(va_arg(argp, size_t), params);
+	if ((*params).mod == J)
+		print_x(va_arg(argp, uintmax_t), params);
 }
-static int	print_formatted_b(va_list argp, t_frmt *params)
+
+static void	print_formatted_b(va_list argp, t_frmt *params)
 {
 	if ((*params).mod == HH)
-		return (print_b((unsigned char)va_arg(argp, unsigned int), params));
-	else if ((*params).mod == H)
-		return (print_b((unsigned short)va_arg(argp, unsigned int), params));
-	else if ((*params).mod == NO)
-		return (print_b(va_arg(argp, unsigned int), params));
-	else if ((*params).mod == L)
-		return (print_b(va_arg(argp, unsigned long), params));
-	else if ((*params).mod == LL)
-		return (print_b(va_arg(argp, unsigned long long), params));
-	else if ((*params).mod == Z)
-		return (print_b(va_arg(argp, size_t), params));
-	else if ((*params).mod == J)
-		return (print_b(va_arg(argp, uintmax_t), params));
-	else
-		return (-1);
+		print_b((unsigned char)va_arg(argp, unsigned int), params);
+	if ((*params).mod == H)
+		print_b((unsigned short)va_arg(argp, unsigned int), params);
+	if ((*params).mod == NO)
+		print_b(va_arg(argp, unsigned int), params);
+	if ((*params).mod == L)
+		print_b(va_arg(argp, unsigned long), params);
+	if ((*params).mod == LL)
+		print_b(va_arg(argp, unsigned long long), params);
+	if ((*params).mod == Z)
+		print_b(va_arg(argp, size_t), params);
+	if ((*params).mod == J)
+		print_b(va_arg(argp, uintmax_t), params);
 }
 
-int			print_formatted(va_list argp, t_frmt *params)
+void			print_formatted(va_list argp, t_frmt *params)
 {
 	if ((*params).spec == 'd' || (*params).spec == 'i' || (*params).spec == 'D')
-		return (print_formatted_di(argp, params));
+		print_formatted_di(argp, params);
 	if ((*params).spec == 'u' || (*params).spec == 'U')
-		return (print_formatted_u(argp, params));
+		print_formatted_u(argp, params);
 	if ((*params).spec == 'o' || (*params).spec == 'O')
-		return (print_formatted_o(argp, params));
+		print_formatted_o(argp, params);
 	if ((*params).spec == 'x' || (*params).spec == 'X')
-		return (print_formatted_x(argp, params));
+		print_formatted_x(argp, params);
 	if ((*params).spec == 'b' || (*params).spec == 'B')
-		return (print_formatted_b(argp, params));
+		print_formatted_b(argp, params);
 	if ((*params).spec == 'p')
 	{
 		(*params).flags |= F_HASH;
-		return (print_x(va_arg(argp, intptr_t), params));
+		print_x(va_arg(argp, intptr_t), params);
 	}
 	if (S_REA((*params).spec))
 	{
 		if ((*params).mod == LD)
-			return (print_feg(va_arg(argp, long double), params));
-		return (print_feg(va_arg(argp, double), params));
+			print_feg(va_arg(argp, long double), params);
+		else
+			print_feg(va_arg(argp, double), params);
 	}
 	if ((*params).spec == 'c' || (*params).spec == 'C')
 	{
 		if ((*params).mod == L || (*params).mod == LL || (*params).spec == 'C')
-			return (print_c((const wchar_t)va_arg(argp, int), params));
-		return (print_c((const char)va_arg(argp, int), params));
+			print_c((const wchar_t)va_arg(argp, int), params);
+		else
+			print_c((const char)va_arg(argp, int), params);
 	}
 	if ((*params).spec == 's' || (*params).spec == 'S')
 	{
 		if ((*params).mod == L || (*params).mod == LL || (*params).spec == 'S')
-			return (print_ws((const wchar_t *)va_arg(argp, const wchar_t *), params));	
-		return (print_s(va_arg(argp, const char *), params));
+			print_ws(va_arg(argp, wchar_t *), params);
+		else
+			print_s(va_arg(argp, char *), params);
 	}
-	return (-1);	
 }

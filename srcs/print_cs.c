@@ -6,169 +6,160 @@
 /*   By: smorty <smorty@student.21school.ru>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/03 19:49:39 by smorty            #+#    #+#             */
-/*   Updated: 2019/05/13 16:18:40 by smorty           ###   ########.fr       */
+/*   Updated: 2019/05/15 21:39:40 by smorty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_printf.h"
 
-static int unicode(wchar_t c, char *code)
+
+static int	unicode(char *g_buf, wchar_t c)
 {
 	if (c <= 0x7F)
 	{
-		*code = (c & 0x7F);
+		*g_buf = (c & 0x7F);
+		++g_len;
+		if (g_len == BUFF_SIZE)
+			print_buf();
 		return (1);
 	}
-	else if (c <= 0x7FF)
+	else if (c <= 0x7FF && BUFF_SIZE >= 2)
 	{
-		*(code + 1) = 0x80 | (c & 0x3F);
+		if (BUFF_SIZE - g_len < 2)
+			print_buf();
+		*(g_buf + 1) = 0x80 | (c & 0x3F);
 		c = (c >> 6);
-		*code = 0xC0 | (c & 0x1F);
+		*g_buf = 0xC0 | (c & 0x1F);
+		g_len += 2;
+		if (g_len == BUFF_SIZE)
+			print_buf();
 		return (2);
 	}
-	else if (c <= 0xFFFF)
+	else if (c <= 0xFFFF && BUFF_SIZE >= 3)
 	{
-		*(code + 2) = 0x80 | (c & 0x3F);
+		if (BUFF_SIZE - g_len < 3)
+			print_buf();
+		*(g_buf + 2) = 0x80 | (c & 0x3F);
 		c = (c >> 6);
-		*(code + 1) = 0x80 | (c & 0x3F);
+		*(g_buf + 1) = 0x80 | (c & 0x3F);
 		c = (c >> 6);
-		*code = 0xE0 | (c & 0xF);
+		*g_buf = 0xE0 | (c & 0xF);
+		g_len += 3;
+		if (g_len == BUFF_SIZE)
+			print_buf();
 		return (3);
 	}
-	if (c <= 0x10FFFF)
+	else if (c <= 0x10FFFF && BUFF_SIZE >= 4)
 	{
-		*(code + 3) = 0x80 | (c & 0x3F);
+		if (BUFF_SIZE - g_len < 4)
+			print_buf();
+		*(g_buf + 3) = 0x80 | (c & 0x3F);
 		c = (c >> 6);
-		*(code + 2) = 0x80 | (c & 0x3F);
+		*(g_buf + 2) = 0x80 | (c & 0x3F);
 		c = (c >> 6);
-		*(code + 1) = 0x80 | (c & 0x3F);
+		*(g_buf + 1) = 0x80 | (c & 0x3F);
 		c = (c >> 6);
-		*code = 0xF0 | (c & 0x7);
+		*g_buf = 0xF0 | (c & 0x7);
+		g_len += 4;
+		if (g_len == BUFF_SIZE)
+			print_buf();
 		return (4);
 	}
 	return (0);
 }
 
-static int putchar_unicode(wchar_t argch, int fd)
+void		print_c(const wchar_t c, t_frmt *prm)
 {
-	char code[4];
+	char	*width;
 
-	if (argch <= 0x7F)
-		return(write(fd, &argch, 1));
-	if (argch <= 0x7FF)
-		return (write(fd, code, unicode(argch, &code[0])));
-	else if (argch <= 0xFFFF)
-		return (write(fd, code, unicode(argch, &code[0])));
-	else
-		return (write(fd, code, unicode(argch, &code[0])));
-	return (0);
+	if ((prm->flags & (F_ZERO | F_MINUS)) == (F_ZERO | F_MINUS))
+		prm->flags ^= F_ZERO;
+	width = NULL;
+	if (--prm->width > 0)
+		if (!(width = get_width(prm)))
+			error();
+	if (width && !(prm->flags & F_MINUS))
+		move_to_buf(width);
+	unicode(g_buf + g_len, c);
+	if (width && prm->flags & F_MINUS)
+		move_to_buf(width);
+	if (width)
+		free(width);
 }
 
-int print_c(const wchar_t argch, t_frmt *prm)
+void		print_s(char *s, t_frmt *prm)
 {
-	char	*s;
-	char	c[5];
+	char	*width;
 	int		printed;
-	int		size;
-	int		flags;
 
-	flags = prm->flags;
-	if (flags & F_ZERO && flags & F_MINUS)
-		flags ^= F_ZERO;
-	size = prm->width - 1;
-	if (size < 0)
-		return (putchar_unicode(argch, prm->fd));
-	if (!(s = (char *)malloc(sizeof(char) * size)))
-		return (-1);
-	ft_memset(s, (flags & F_ZERO ? '0' : ' '), size);
-	if (flags & F_MINUS)
-		printed = putchar_unicode(argch, prm->fd) + write(prm->fd, s, size);
-	else
-		printed = write(prm->fd, s, size) + putchar_unicode(argch, prm->fd);
-	free(s);
-	return (printed);
+	if (!s)
+		s = (prm->precision - (prm->flags & F_PREC) ? "(null)" : "");
+	if ((prm->flags & (F_ZERO | F_MINUS)) == (F_ZERO | F_MINUS))
+		prm->flags ^= F_ZERO;
+	prm->len = ft_strlen(s);
+	if (prm->flags & F_PREC)
+		prm->len = MIN(prm->precision - (prm->flags & F_PREC), prm->len);
+	width = NULL;
+	if (prm->width > prm->len)
+		if (!(width = get_width(prm)))
+			error();
+	if (width && !(prm->flags & F_MINUS))
+		move_to_buf(width);
+	move_to_buf(s);
+	if (width && prm->flags & F_MINUS)
+		move_to_buf(width);
+	if (width)
+		free(width);
 }
 
-int	print_s(const char *args, t_frmt *prm)
+int			lensize(const wchar_t *s)
 {
-	char	*s;
-	int		printed;
-	int		size;
-	int		len;
-	int		flags;
+	int size;
 
-	flags = prm->flags;
-	if (!args)
-		args = "(null)";
-	if ((flags & (F_ZERO | F_MINUS)) == (F_ZERO | F_MINUS))
-		flags ^= F_ZERO;
-	len = ft_strlen(args);
-	if (flags & F_PREC)
-		len = MIN(prm->precision - (flags & F_PREC), len);
-	size = MAX(prm->width, len);
-	if (!(s = (char *)malloc(sizeof(char) * (size + 1))))
-		return (-1);
-	ft_memset(s, (flags & F_ZERO ? '0' : ' '), size);
-	if (flags & F_MINUS)
-		ft_strncpy(s, args, len);
-	else
-		ft_strncpy(s + size - len, args, len);
-	printed = write(prm->fd, s, size);
-	free(s);
-	return (printed);
-}
-
-int	print_ws(const wchar_t *args, t_frmt *prm)
-{
-	char	*s;
-	int		printed;
-	int		size;
-	int		flags;
-	int		len;
-	int		n;
-
-	flags = prm->flags;
-	if (!args)
-		return (print_s("(null)", prm));
-	if ((flags & (F_ZERO | F_MINUS)) == (F_ZERO | F_MINUS))
-		flags ^= F_ZERO;
-	len = lensize(args);
-	if (flags & F_PREC)
-		len = MIN(prm->precision - (flags & F_PREC), len);
-	size = MAX(prm->width, len);
-	if (!(s = (char *)malloc(sizeof(char) * (size + 4))))
-		return (-1);
-	ft_memset(s, (flags & F_ZERO ? '0' : ' '), size);
-	printed = 0;
-	n = 0;
-	if (flags & F_MINUS)
+	size = 0;
+	while (*s)
 	{
-		while (n < len && *args)
-		{
-			n += unicode(*args, s + n);
-			args++;
-		}
-		if (n > len)
-			size -= n - len;
+		if (*s <= 0x7F)
+			++size;
+		else if (*s <= 0x7FF)
+			size += 2;
+		else if (*s <= 0xFFFF)
+			size += 3;
+		else
+			size += 4;
+		++s;
 	}
+	return (size);
+}
+
+void		print_ws(wchar_t *s, t_frmt *prm)
+{
+	char	*width;
+	int		printed;
+
+	if (!s)
+		print_s(NULL, prm);
 	else
 	{
-		while (len > 0 && *args)
+		if ((prm->flags & (F_ZERO | F_MINUS)) == (F_ZERO | F_MINUS))
+			prm->flags ^= F_ZERO;
+		prm->len = lensize(s);
+		if (prm->flags & F_PREC)
+			prm->len = MIN(prm->precision - (prm->flags & F_PREC), prm->len);
+		width = NULL;
+		if (prm->width > prm->len)
+			if (!(width = get_width(prm)))
+				error();
+		if (width && !(prm->flags & F_MINUS))
+			move_to_buf(width);
+		while (prm->len > 0)
 		{
-			n = unicode(*args, s + size - len);
-			len -= n;
-			args++;
+			prm->len -= unicode(g_buf + g_len, *s);
+			++s;
 		}
-		if (len < 0)
-			while (len + n > 0)
-			{
-				if (prm->width)
-					printed += write(prm->fd, (flags & F_ZERO ? "0" : " "), 1);
-				n--;
-				size--;
-			}
+		if (width && prm->flags & F_MINUS)
+			move_to_buf(width);
+		if (width)
+			free(width);
 	}
-	printed += write(prm->fd, s, size);
-	free(s);
-	return (printed);
 }

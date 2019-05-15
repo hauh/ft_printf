@@ -6,7 +6,7 @@
 /*   By: smorty <smorty@student.21school.ru>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/14 20:24:09 by smorty            #+#    #+#             */
-/*   Updated: 2019/05/14 23:07:30 by smorty           ###   ########.fr       */
+/*   Updated: 2019/05/15 17:20:49 by smorty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,7 +49,7 @@ static void	prefix_b(char *s, uintmax_t n, t_frmt *prm)
 	}
 }
 
-int			print_b(uintmax_t n, t_frmt *prm)
+void		print_b(uintmax_t n, t_frmt *prm)
 {
 	char	*out;
 	char	*width;
@@ -60,7 +60,7 @@ int			print_b(uintmax_t n, t_frmt *prm)
 	prec = prm->precision - (prm->flags & F_PREC);
 	prm->len = MAX(num_len_b(n), prec) + (n && (prm->flags & F_HASH) ? 2 : 0);
 	if (!(out = (char *)malloc(sizeof(char) * prm->len)))
-		return (-1);
+		error();
 	ft_memset(out, '0', prm->len);
 	if (!n && !prec)
 		prm->len = 0;
@@ -68,12 +68,8 @@ int			print_b(uintmax_t n, t_frmt *prm)
 		btoa(out + prm->len - 1, n);
 	width = NULL;
 	if (prm->width > prm->len)
-	{
-		prm->width -= prm->len;
-		if (!(width = (char *)malloc(sizeof(char) * prm->width)))
-			return (-1);
-		ft_memset(width, (prm->flags & F_ZERO ? '0' : ' '), prm->width);
-	}
+		if (!(width = get_width(prm)))
+			error();
 	prefix_b((width && (prm->flags & F_ZERO) ? width : out), n, prm);
-	return (print(out, width, prm));
+	print(out, width, prm);
 }

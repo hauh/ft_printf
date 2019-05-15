@@ -6,7 +6,7 @@
 /*   By: smorty <smorty@student.21school.ru>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/12 18:18:09 by smorty            #+#    #+#             */
-/*   Updated: 2019/05/14 21:31:16 by smorty           ###   ########.fr       */
+/*   Updated: 2019/05/15 17:08:48 by smorty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -117,7 +117,7 @@ void				fracttoa(char *s, double n, int precision)
 	}
 }
 
-int					print_feg(long double n, t_frmt *prm)
+void				print_feg(long double n, t_frmt *prm)
 {
 	long double	e;
 	int			i;
@@ -146,6 +146,7 @@ int					print_feg(long double n, t_frmt *prm)
 	if (prm->len < 0)
 		prm->len = ~prm->len + 1;
 	if (spec == 'e' || spec == 'E')
-		return (print_e(n, prm));
-	return (print_f(n, prm));
+		print_e(n, prm);
+	else
+		print_f(n, prm);
 }
