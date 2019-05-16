@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   print_e.c                                          :+:      :+:    :+:   */
+/*   process_e.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: smorty <smorty@student.21school.ru>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/14 16:40:04 by smorty            #+#    #+#             */
-/*   Updated: 2019/05/15 17:11:00 by smorty           ###   ########.fr       */
+/*   Updated: 2019/05/16 23:16:25 by smorty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,21 +58,21 @@ static void	etoa(char *s, long double n, t_frmt *prm)
 	*(s + suffix_e(s, exponent, prm->spec)) = 0;
 }
 
-void		print_e(long double n, t_frmt *prm)
+void		process_e(long double n, t_frmt *prm)
 {
 	char	*out;
 	char	*width;
-	int		prefix;
 
-	prefix = (n < 0 || prm->flags & (F_PLUS | F_SPACE));
-	prm->len = prm->len + prm->precision + prefix;
-	if (!(out = (char *)malloc(sizeof(char) * prm->len)))
-		error();
+	prm->len = prm->len + prm->precision;
+	if (n < 0 || prm->flags & (F_PLUS | F_SPACE))
+		++prm->len;
+	if (!(out = (char *)malloc(sizeof(char) * (prm->len + 1))))
+	{
+		g_error = -1;
+		return ;
+	}
 	etoa(out, n, prm);
 	prm->len = ft_strlen(out);
-	width = NULL;
-	if (prm->width > prm->len)
-		if (!(width = get_width(prm)))
-			error();
-	print(out, width, prm);
+	width = get_width(prm);
+	to_print(out, width, prm);
 }

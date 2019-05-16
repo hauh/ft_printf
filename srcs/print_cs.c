@@ -6,7 +6,7 @@
 /*   By: smorty <smorty@student.21school.ru>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/03 19:49:39 by smorty            #+#    #+#             */
-/*   Updated: 2019/05/15 21:39:40 by smorty           ###   ########.fr       */
+/*   Updated: 2019/05/16 23:47:36 by smorty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,7 +49,7 @@ static int	unicode(char *g_buf, wchar_t c)
 			print_buf();
 		return (3);
 	}
-	else if (c <= 0x10FFFF && BUFF_SIZE >= 4)
+	else if (BUFF_SIZE >= 4)
 	{
 		if (BUFF_SIZE - g_len < 4)
 			print_buf();
@@ -74,13 +74,22 @@ void		print_c(const wchar_t c, t_frmt *prm)
 
 	if ((prm->flags & (F_ZERO | F_MINUS)) == (F_ZERO | F_MINUS))
 		prm->flags ^= F_ZERO;
-	width = NULL;
-	if (--prm->width > 0)
-		if (!(width = get_width(prm)))
-			error();
+	if (c <= 0x7FF)
+		prm->len = (c <= 0x7F ? 1 : 2);
+	else
+		prm->len = (c <= 0xFFFF ? 3 : 4);
+	width = get_width(prm);
 	if (width && !(prm->flags & F_MINUS))
 		move_to_buf(width);
-	unicode(g_buf + g_len, c);
+	if (prm->mod == L || prm->spec == 'C')
+		unicode(g_buf + g_len, c);
+	else
+	{
+		*(g_buf + g_len) = c;
+		++g_len;
+		if (g_len == BUFF_SIZE)
+			print_buf();
+	}
 	if (width && prm->flags & F_MINUS)
 		move_to_buf(width);
 	if (width)
@@ -89,6 +98,7 @@ void		print_c(const wchar_t c, t_frmt *prm)
 
 void		print_s(char *s, t_frmt *prm)
 {
+	char	*out;
 	char	*width;
 	int		printed;
 
@@ -105,37 +115,55 @@ void		print_s(char *s, t_frmt *prm)
 			error();
 	if (width && !(prm->flags & F_MINUS))
 		move_to_buf(width);
-	move_to_buf(s);
+	while (prm->len > 0)
+	{
+			*(g_buf + g_len) = *s;
+			++g_len;
+			if (g_len == BUFF_SIZE)
+				print_buf();
+			--prm->len;
+			++s;
+	}
 	if (width && prm->flags & F_MINUS)
 		move_to_buf(width);
 	if (width)
 		free(width);
 }
 
-int			lensize(const wchar_t *s)
+static int	strsize(const wchar_t *s, t_frmt *prm)
 {
+	int i;
 	int size;
 
+	i = 0;
 	size = 0;
-	while (*s)
+	prm->precision -= prm->flags & F_PREC;
+	while (*s && (prm->flags & F_PREC ? prm->precision > 0 : 1))
 	{
-		if (*s <= 0x7F)
-			++size;
-		else if (*s <= 0x7FF)
-			size += 2;
-		else if (*s <= 0xFFFF)
-			size += 3;
+		if (*s <= 0x7FF)
+		{
+			i = (*s <= 0x7F ? 1 : 2);
+			size += i;
+			if (prm->flags & F_PREC)
+				prm->precision -= i;
+		}
 		else
-			size += 4;
+		{
+			i = (*s <= 0xFFFF ? 3 : 4);
+			size += i;
+			if (prm->flags & F_PREC)
+				prm->precision -= i;
+		}
 		++s;
 	}
-	return (size);
+	return ((prm->flags & F_PREC) && prm->precision < 0 ? size - i : size);
 }
 
 void		print_ws(wchar_t *s, t_frmt *prm)
 {
 	char	*width;
 	int		printed;
+	int		i;
 
 	if (!s)
 		print_s(NULL, prm);
@@ -143,9 +171,7 @@ void		print_ws(wchar_t *s, t_frmt *prm)
 	{
 		if ((prm->flags & (F_ZERO | F_MINUS)) == (F_ZERO | F_MINUS))
 			prm->flags ^= F_ZERO;
-		prm->len = lensize(s);
-		if (prm->flags & F_PREC)
-			prm->len = MIN(prm->precision - (prm->flags & F_PREC), prm->len);
+		prm->len = strsize(s, prm);
 		width = NULL;
 		if (prm->width > prm->len)
 			if (!(width = get_width(prm)))

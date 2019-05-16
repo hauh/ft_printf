@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   print_f.c                                          :+:      :+:    :+:   */
+/*   process_f.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: smorty <smorty@student.21school.ru>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/09 15:53:23 by smorty            #+#    #+#             */
-/*   Updated: 2019/05/15 17:02:07 by smorty           ###   ########.fr       */
+/*   Updated: 2019/05/16 23:20:24 by smorty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,9 +14,9 @@
 
 static int	ftoa(char *s, long double n)
 {
-	long double d;
-	int size;
-	int len;
+	long double	d;
+	int			len;
+	int			size;
 
 	if (!(int)n)
 	{
@@ -54,13 +54,11 @@ static int	ftoa(char *s, long double n)
 
 static void	floattoa(char *s, long double n, t_frmt *prm)
 {
-	long double z;
 	int precision;
-	int exponent;
 
 	precision = prm->precision;
-	if ((int)n != (int)round_f(n, prm->precision))
-		n = round_f(n, prm->precision);
+	if ((int)n != (int)round_f(n, precision))
+		n = round_f(n, precision);
 	s += prefix_fe(s, n, prm->flags);
 	s += ftoa(s, n);
 	if (precision || prm->flags & F_HASH)
@@ -71,21 +69,21 @@ static void	floattoa(char *s, long double n, t_frmt *prm)
 	*(s + precision) = 0;
 }
 
-void		print_f(long double n, t_frmt *prm)
+void		process_f(long double n, t_frmt *prm)
 {
 	char *out;
 	char *width;
-	int prefix;
 
-	prefix = (n < 0 || prm->flags & (F_PLUS | F_SPACE));
-	prm->len = prm->len + prm->precision + prefix;
-	if (!(out = (char *)malloc(sizeof(char) * prm->len)))
-		error();
+	prm->len = prm->len + prm->precision;
+	if (n < 0 || prm->flags & (F_PLUS | F_SPACE))
+		++prm->len;
+	if (!(out = (char *)malloc(sizeof(char) * (prm->len + 1))))
+	{
+		g_error = -1;
+		return ;
+	}
 	floattoa(out, n, prm);
 	prm->len = ft_strlen(out);
-	width = NULL;
-	if (prm->width > prm->len)
-		if (!(width = get_width(prm)))
-			error();
-	print(out, width, prm);
+	width = get_width(prm);
+	to_print(out, width, prm);
 }
