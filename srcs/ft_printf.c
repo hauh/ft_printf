@@ -6,20 +6,19 @@
 /*   By: smorty <smorty@student.21school.ru>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/02 14:55:41 by smorty            #+#    #+#             */
-/*   Updated: 2019/05/15 17:27:49 by smorty           ###   ########.fr       */
+/*   Updated: 2019/05/16 22:39:44 by smorty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_printf.h"
 
-char	*g_buf;
+char	g_buf[BUFF_SIZE];
 int		g_len;
 int		g_printed;
 int		g_error;
 
 void error(void)
 {
-	free(g_buf);
 	g_error = -1;
 }
 
@@ -36,7 +35,6 @@ int		ft_printf(const char *format, ...)
 	g_printed = 0;
 	if (format)
 	{
-		g_buf = (char *)malloc(sizeof(char) * BUFF_SIZE);
 		va_start(argp, format);
 		while (*format)
 		{
@@ -64,7 +62,6 @@ int		ft_printf(const char *format, ...)
 		}
 		va_end(argp);
 		print_buf();
-		free(g_buf);
 	}
 	return (g_error ? g_error : g_printed);
 }

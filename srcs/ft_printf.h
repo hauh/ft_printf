@@ -6,7 +6,7 @@
 /*   By: smorty <smorty@student.21school.ru>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/02 14:08:11 by smorty            #+#    #+#             */
-/*   Updated: 2019/05/15 20:55:57 by smorty           ###   ########.fr       */
+/*   Updated: 2019/05/16 23:25:45 by smorty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,9 +35,9 @@
 # define F_HASH 16
 # define F_ZERO 32
 
-#define BUFF_SIZE 256
+#define BUFF_SIZE 64
 
-extern char	*g_buf;
+extern char	g_buf[BUFF_SIZE];
 extern int	g_len;
 extern int	g_printed;
 extern int	g_error;
@@ -61,25 +61,23 @@ typedef struct	s_frmt
 int				ft_printf(const char *format, ...);
 void			parse_format(const char **format, va_list argp);
 void			print_formatted(va_list argp, t_frmt *prm);
-void			print_d(intmax_t n, t_frmt *prm);
-void			print_u(uintmax_t n, t_frmt *prm);
-void			print_o(uintmax_t n, t_frmt *prm);
-void			print_x(uintmax_t n, t_frmt *prm);
-void			print_b(uintmax_t n, t_frmt *prm);
-void			print_f(long double n, t_frmt *prm);
-void			print_e(long double n, t_frmt *prm);
-void			print_feg(long double n, t_frmt *prm);
+void			process_d(va_list argp, t_frmt *prm);
+void			process_u(va_list argp, t_frmt *prm);
+void			process_o(va_list argp, t_frmt *prm);
+void			process_x(va_list argp, t_frmt *prm);
+void			process_b(va_list argp, t_frmt *prm);
+void			process_f(long double n, t_frmt *prm);
+void			process_e(long double n, t_frmt *prm);
+void			process_feg(long double n, t_frmt *prm);
 void			print_c(const wchar_t c, t_frmt *prm);
 void			print_s(char *s, t_frmt *prm);
 void			print_ws(wchar_t *s, t_frmt *prm);
-int				num_len(intmax_t n);
-void			ntoa(char *s, intmax_t n);
 void			fracttoa(char *s, double n, int precision);
 int				prefix_fe(char *s, long double n, int flags);
 long double		round_f(long double n, int precision);
 int				get_exponent(long double *n);
 void			trim_zeros(char *s, int *precision);
-void			print(char *out, char *width, t_frmt *prm);
+void			to_print(char *out, char *width, t_frmt *prm);
 char			*get_width(t_frmt *prm);
 void			print_buf(void);
 void			move_to_buf(char *s);

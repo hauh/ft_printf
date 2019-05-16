@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   print_o.c                                          :+:      :+:    :+:   */
+/*   process_o.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: smorty <smorty@student.21school.ru>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/06 16:58:45 by smorty            #+#    #+#             */
-/*   Updated: 2019/05/15 21:30:30 by smorty           ###   ########.fr       */
+/*   Updated: 2019/05/16 23:20:43 by smorty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,8 +30,6 @@ static int	num_len_o(uintmax_t n)
 
 static void	otoa(char *s, uintmax_t n)
 {
-	if (!n)
-		*s = '0';
 	while (n)
 	{
 		*s = n % 8 + '0';
@@ -40,26 +38,45 @@ static void	otoa(char *s, uintmax_t n)
 	}
 }
 
-void		print_o(uintmax_t n, t_frmt *prm)
+static void	process_o_mod(uintmax_t n, t_frmt *prm)
 {
 	char	*out;
 	char	*width;
-	int		prec;
+	int		precision;
 
 	if (prm->flags & F_ZERO && prm->flags & (F_MINUS | F_PREC))
 		prm->flags ^= F_ZERO;
-	prec = prm->precision - (prm->flags & F_PREC);
-	prm->len = MAX(num_len_o(n), prec) + (n && (prm->flags & F_HASH) ? 1 : 0);
-	if (!(out = (char *)malloc(sizeof(char) * prm->len)))
-		error();
+	precision = prm->precision - (prm->flags & F_PREC);
+	prm->len = num_len_o(n) + (n && (prm->flags & F_HASH) ? 1 : 0);
+	prm->len = MAX(prm->len, precision);
+	if (!(out = (char *)malloc(sizeof(char) * (prm->len + 1))))
+	{
+		g_error = -1;
+		return ;
+	}
 	ft_memset(out, '0', prm->len);
-	if (!n && !prec)
+	if (!n && !precision)
 		prm->len = (prm->flags & F_HASH ? 1 : 0);
 	else
 		otoa(out + prm->len - 1, n);
-	width = NULL;
-	if (prm->width > prm->len)
-		if (!(width = get_width(prm)))
-			error();
-	print(out, width, prm);
+	width = get_width(prm);
+	to_print(out, width, prm);
+}
+
+void		process_o(va_list argp, t_frmt *params)
+{
+	if ((*params).mod == HH)
+		process_o_mod((unsigned char)va_arg(argp, unsigned int), params);
+	else if ((*params).mod == H)
+		process_o_mod((unsigned short)va_arg(argp, unsigned int), params);
+	else if ((*params).mod == NO)
+		process_o_mod(va_arg(argp, unsigned int), params);
+	else if ((*params).mod == L)
+		process_o_mod(va_arg(argp, unsigned long), params);
+	else if ((*params).mod == LL)
+		process_o_mod(va_arg(argp, unsigned long long), params);
+	else if ((*params).mod == Z)
+		process_o_mod(va_arg(argp, size_t), params);
+	else if ((*params).mod == J)
+		process_o_mod(va_arg(argp, uintmax_t), params);
 }
