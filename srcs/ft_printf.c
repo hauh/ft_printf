@@ -6,7 +6,7 @@
 /*   By: smorty <smorty@student.21school.ru>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/02 14:55:41 by smorty            #+#    #+#             */
-/*   Updated: 2019/05/16 22:39:44 by smorty           ###   ########.fr       */
+/*   Updated: 2019/05/17 16:26:29 by smorty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,7 @@ void error(void)
 void print_buf(void)
 {
 	g_printed += write(1, g_buf, g_len);
+	ft_bzero(g_buf, BUFF_SIZE);
 	g_len = 0;
 }
 
@@ -33,6 +34,8 @@ int		ft_printf(const char *format, ...)
 	va_list argp;
 
 	g_printed = 0;
+	g_error = 0;
+	g_len = 0;
 	if (format)
 	{
 		va_start(argp, format);

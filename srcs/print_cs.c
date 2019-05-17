@@ -6,18 +6,18 @@
 /*   By: smorty <smorty@student.21school.ru>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/03 19:49:39 by smorty            #+#    #+#             */
-/*   Updated: 2019/05/16 23:47:36 by smorty           ###   ########.fr       */
+/*   Updated: 2019/05/17 16:24:39 by smorty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_printf.h"
 
 
-static int	unicode(char *g_buf, wchar_t c)
+static int	unicode(wchar_t c)
 {
 	if (c <= 0x7F)
 	{
-		*g_buf = (c & 0x7F);
+		*(g_buf + g_len) = (c & 0x7F);
 		++g_len;
 		if (g_len == BUFF_SIZE)
 			print_buf();
@@ -27,9 +27,9 @@ static int	unicode(char *g_buf, wchar_t c)
 	{
 		if (BUFF_SIZE - g_len < 2)
 			print_buf();
-		*(g_buf + 1) = 0x80 | (c & 0x3F);
+		*(g_buf + g_len + 1) = 0x80 | (c & 0x3F);
 		c = (c >> 6);
-		*g_buf = 0xC0 | (c & 0x1F);
+		*(g_buf + g_len) = 0xC0 | (c & 0x1F);
 		g_len += 2;
 		if (g_len == BUFF_SIZE)
 			print_buf();
@@ -39,11 +39,11 @@ static int	unicode(char *g_buf, wchar_t c)
 	{
 		if (BUFF_SIZE - g_len < 3)
 			print_buf();
-		*(g_buf + 2) = 0x80 | (c & 0x3F);
+		*(g_buf + g_len + 2) = 0x80 | (c & 0x3F);
 		c = (c >> 6);
-		*(g_buf + 1) = 0x80 | (c & 0x3F);
+		*(g_buf + g_len + 1) = 0x80 | (c & 0x3F);
 		c = (c >> 6);
-		*g_buf = 0xE0 | (c & 0xF);
+		*(g_buf + g_len) = 0xE0 | (c & 0xF);
 		g_len += 3;
 		if (g_len == BUFF_SIZE)
 			print_buf();
@@ -53,13 +53,13 @@ static int	unicode(char *g_buf, wchar_t c)
 	{
 		if (BUFF_SIZE - g_len < 4)
 			print_buf();
-		*(g_buf + 3) = 0x80 | (c & 0x3F);
+		*(g_buf + g_len + 3) = 0x80 | (c & 0x3F);
 		c = (c >> 6);
-		*(g_buf + 2) = 0x80 | (c & 0x3F);
+		*(g_buf + g_len + 2) = 0x80 | (c & 0x3F);
 		c = (c >> 6);
-		*(g_buf + 1) = 0x80 | (c & 0x3F);
+		*(g_buf + g_len + 1) = 0x80 | (c & 0x3F);
 		c = (c >> 6);
-		*g_buf = 0xF0 | (c & 0x7);
+		*(g_buf + g_len) = 0xF0 | (c & 0x7);
 		g_len += 4;
 		if (g_len == BUFF_SIZE)
 			print_buf();
@@ -82,7 +82,7 @@ void		print_c(const wchar_t c, t_frmt *prm)
 	if (width && !(prm->flags & F_MINUS))
 		move_to_buf(width);
 	if (prm->mod == L || prm->spec == 'C')
-		unicode(g_buf + g_len, c);
+		unicode(c);
 	else
 	{
 		*(g_buf + g_len) = c;
@@ -100,7 +100,6 @@ void		print_s(char *s, t_frmt *prm)
 {
 	char	*out;
 	char	*width;
-	int		printed;
 
 	if (!s)
 		s = (prm->precision - (prm->flags & F_PREC) ? "(null)" : "");
@@ -109,10 +108,7 @@ void		print_s(char *s, t_frmt *prm)
 	prm->len = ft_strlen(s);
 	if (prm->flags & F_PREC)
 		prm->len = MIN(prm->precision - (prm->flags & F_PREC), prm->len);
-	width = NULL;
-	if (prm->width > prm->len)
-		if (!(width = get_width(prm)))
-			error();
+	width = get_width(prm);
 	if (width && !(prm->flags & F_MINUS))
 		move_to_buf(width);
 	while (prm->len > 0)
@@ -172,15 +168,12 @@ void		print_ws(wchar_t *s, t_frmt *prm)
 		if ((prm->flags & (F_ZERO | F_MINUS)) == (F_ZERO | F_MINUS))
 			prm->flags ^= F_ZERO;
 		prm->len = strsize(s, prm);
-		width = NULL;
-		if (prm->width > prm->len)
-			if (!(width = get_width(prm)))
-				error();
+		width = get_width(prm);
 		if (width && !(prm->flags & F_MINUS))
 			move_to_buf(width);
 		while (prm->len > 0)
 		{
-			prm->len -= unicode(g_buf + g_len, *s);
+			prm->len -= unicode(*s);
 			++s;
 		}
 		if (width && prm->flags & F_MINUS)

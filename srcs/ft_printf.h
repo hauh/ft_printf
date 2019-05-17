@@ -6,7 +6,7 @@
 /*   By: smorty <smorty@student.21school.ru>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/02 14:08:11 by smorty            #+#    #+#             */
-/*   Updated: 2019/05/16 23:25:45 by smorty           ###   ########.fr       */
+/*   Updated: 2019/05/17 16:24:52 by smorty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,7 @@
 # define F_HASH 16
 # define F_ZERO 32
 
-#define BUFF_SIZE 64
+#define BUFF_SIZE 128
 
 extern char	g_buf[BUFF_SIZE];
 extern int	g_len;
