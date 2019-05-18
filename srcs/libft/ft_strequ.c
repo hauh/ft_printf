@@ -3,23 +3,26 @@
 /*                                                        :::      ::::::::   */
 /*   ft_strequ.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: smorty <marvin@42.fr>                      +#+  +:+       +#+        */
+/*   By: smorty <smorty@student.21school.ru>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/10 16:06:36 by smorty            #+#    #+#             */
-/*   Updated: 2019/04/13 19:29:00 by smorty           ###   ########.fr       */
+/*   Updated: 2019/05/17 23:14:07 by smorty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 int		ft_strequ(char const *s1, char const *s2)
 {
-	if (!s1 || !s2)
-		return (0);
-	while (*s1 || *s2)
+	if (s1 != s2)
 	{
-		if (*s1 != *s2)
+		if (!s1 || !s2)
 			return (0);
-		s1++;
-		s2++;
+		while (*s1 || *s2)
+		{
+			if (*s1 != *s2)
+				return (0);
+			++s1;
+			++s2;
+		}
 	}
 	return (1);
 }

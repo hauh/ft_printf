@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_strstr.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: smorty <marvin@42.fr>                      +#+  +:+       +#+        */
+/*   By: smorty <smorty@student.21school.ru>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/05 21:09:53 by smorty            #+#    #+#             */
-/*   Updated: 2019/04/13 18:23:39 by smorty           ###   ########.fr       */
+/*   Updated: 2019/05/17 22:02:05 by smorty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,11 +23,11 @@ char	*ft_strstr(char const *haystack, char const *needle)
 		i = 0;
 		while (haystack[i] == needle[i])
 		{
-			i++;
+			++i;
 			if (!needle[i])
 				return ((char *)haystack);
 		}
-		haystack++;
+		++haystack;
 	}
 	return (NULL);
 }

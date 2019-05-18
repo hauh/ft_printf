@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_putnbr_fd.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: smorty <marvin@42.fr>                      +#+  +:+       +#+        */
+/*   By: smorty <smorty@student.21school.ru>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/11 15:22:48 by smorty            #+#    #+#             */
-/*   Updated: 2019/04/11 15:24:19 by smorty           ###   ########.fr       */
+/*   Updated: 2019/05/18 16:10:08 by smorty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ void	ft_putnbr_fd(int n, int fd)
 		if (tmp < 0)
 		{
 			write(fd, "-", 1);
-			tmp *= -1;
+			tmp = ~tmp + 1;
 		}
 		while (tmp != 1)
 		{

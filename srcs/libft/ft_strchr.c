@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_strchr.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: smorty <marvin@42.fr>                      +#+  +:+       +#+        */
+/*   By: smorty <smorty@student.21school.ru>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/05 20:41:56 by smorty            #+#    #+#             */
-/*   Updated: 2019/04/13 18:14:56 by smorty           ###   ########.fr       */
+/*   Updated: 2019/05/17 22:02:16 by smorty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@ char	*ft_strchr(char const *s, int c)
 	{
 		if (*s == (char)c)
 			return ((char *)s);
-		s++;
+		++s;
 	}
 	if (!c)
 		return ((char *)s);

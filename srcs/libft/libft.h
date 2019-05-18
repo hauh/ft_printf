@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   libft.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: smorty <smorty@student.21-school.ru>       +#+  +:+       +#+        */
+/*   By: smorty <smorty@student.21school.ru>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/03 20:54:28 by smorty            #+#    #+#             */
-/*   Updated: 2019/05/01 21:07:00 by smorty           ###   ########.fr       */
+/*   Updated: 2019/05/18 17:53:02 by smorty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,8 +66,10 @@ void			ft_striteri(char *s, void (*f)(unsigned int, char *));
 char			*ft_strmap(char const *s, char (*f)(char));
 char			*ft_strmapi(char const *s, char (*f)(unsigned int, char));
 char			*ft_strtrim(char const *s);
+char			*ft_strtrimc(char const *s, char c);
 char			**ft_strsplit(char const *s, char c);
 int				ft_atoi(char const *s);
+double			ft_atof(const char *s);
 char			*ft_strsub(char const *s, unsigned int start, size_t n);
 char			*ft_strcapitalize(char *s);
 /*
@@ -106,9 +108,5 @@ void			ft_lstdel(t_list **alst, void (*del)(void *, size_t));
 void			ft_lstadd(t_list **alst, t_list *new);
 void			ft_lstiter(t_list *lst, void (*f)(t_list *elem));
 t_list			*ft_lstmap(t_list *lst, t_list *(*f)(t_list *elem));
-/*
-** --- printf ---
-*/
-void			ft_putlong(long long n);
 
 #endif
