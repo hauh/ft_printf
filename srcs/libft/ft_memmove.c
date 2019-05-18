@@ -3,36 +3,38 @@
 /*                                                        :::      ::::::::   */
 /*   ft_memmove.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: smorty <marvin@42.fr>                      +#+  +:+       +#+        */
+/*   By: smorty <smorty@student.21school.ru>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/04 19:35:37 by smorty            #+#    #+#             */
-/*   Updated: 2019/04/13 21:31:58 by smorty           ###   ########.fr       */
+/*   Updated: 2019/05/18 18:04:28 by smorty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 
-void	*ft_memmove(void *dst, void const *src, size_t n)
+void	*ft_memmove(void *dst, const void *src, size_t n)
 {
-	size_t i;
+	char *s;
+	char *d;
 
-	if (dst || src)
+	if (src != dst)
 	{
-		if (src <= dst)
+		d = (char *)dst;
+		s = (char *)src;
+		if (src > dst)
 			while (n)
 			{
-				n--;
-				*(unsigned char *)(dst + n) = *(unsigned char *)(src + n);
+				--n;
+				*d = *s;
+				++d;
+				++s;
 			}
 		else
-		{
-			i = 0;
-			while (i < n)
+			while (n)
 			{
-				*(unsigned char *)(dst + i) = *(unsigned char *)(src + i);
-				i++;
+				--n;
+				*(d + n) = *(s + n);
 			}
-		}
 	}
 	return (dst);
 }

@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_strlcat.h                                       :+:      :+:    :+:   */
+/*   ft_strlcat.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: smorty <marvin@42.fr>                      +#+  +:+       +#+        */
+/*   By: smorty <smorty@student.21school.ru>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/05 16:32:54 by smorty            #+#    #+#             */
-/*   Updated: 2019/04/13 18:04:28 by smorty           ###   ########.fr       */
+/*   Updated: 2019/05/17 20:02:51 by smorty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,21 +14,24 @@
 
 size_t	ft_strlcat(char *dst, char const *src, size_t n)
 {
-	size_t i;
-	size_t j;
+	size_t len;
 
-	i = 0;
-	j = 0;
-	while (dst[i] && (i < n))
-		i++;
-	while (src[j])
+	len = ft_strlen(dst);
+	if (n < len)
+		return (n + ft_strlen(src));
+	dst += len;
+	n -= len;
+	while (*src)
 	{
-		if (i + j + 1 < n)
+		if (n > 1)
 		{
-			dst[i + j] = src[j];
-			dst[i + j + 1] = '\0';
+			--n;
+			*dst = *src;
+			++dst;
 		}
-		j++;
+		++src;
+		++len;
 	}
-	return (i + j);
+	*dst = 0;
+	return (len);
 }

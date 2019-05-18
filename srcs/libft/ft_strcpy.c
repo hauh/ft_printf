@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_strcpy.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: smorty <marvin@42.fr>                      +#+  +:+       +#+        */
+/*   By: smorty <smorty@student.21school.ru>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/04 21:44:51 by smorty            #+#    #+#             */
-/*   Updated: 2019/04/13 17:50:12 by smorty           ###   ########.fr       */
+/*   Updated: 2019/05/17 17:48:42 by smorty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,9 +18,9 @@ char	*ft_strcpy(char *dst, char const *src)
 	while (*src)
 	{
 		*dst = *src;
-		dst++;
-		src++;
+		++dst;
+		++src;
 	}
-	*dst = '\0';
+	*dst = 0;
 	return (dst0);
 }

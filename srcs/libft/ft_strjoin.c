@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_strjoin.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: smorty <marvin@42.fr>                      +#+  +:+       +#+        */
+/*   By: smorty <smorty@student.21school.ru>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/10 16:54:58 by smorty            #+#    #+#             */
-/*   Updated: 2019/04/10 17:08:56 by smorty           ###   ########.fr       */
+/*   Updated: 2019/05/18 15:37:55 by smorty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,28 +14,27 @@
 
 char	*ft_strjoin(char const *s1, char const *s2)
 {
-	unsigned int	i;
-	char			*fresh;
+	char	*fresh;
+	char	*fresh0;
 
 	if (!s1 || !s2)
 		return (NULL);
-	i = ft_strlen(s1) + ft_strlen(s2) + 1;
-	fresh = (char *)malloc(sizeof(char) * (i));
+	fresh = (char *)malloc(sizeof(char) * (ft_strlen(s1) + ft_strlen(s2) + 1));
 	if (!fresh)
 		return (NULL);
-	i = 0;
+	fresh0 = fresh;
 	while (*s1)
 	{
-		fresh[i] = *s1;
-		i++;
-		s1++;
+		*fresh = *s1;
+		++fresh;
+		++s1;
 	}
 	while (*s2)
 	{
-		fresh[i] = *s2;
-		i++;
-		s2++;
+		*fresh = *s2;
+		++fresh;
+		++s2;
 	}
-	fresh[i] = '\0';
-	return (fresh);
+	*fresh = 0;
+	return (fresh0);
 }

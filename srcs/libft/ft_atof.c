@@ -1,40 +1,40 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_putlong.c                                       :+:      :+:    :+:   */
+/*   ft_atof.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: smorty <smorty@student.21school.ru>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2019/05/01 21:55:56 by smorty            #+#    #+#             */
-/*   Updated: 2019/05/01 22:05:26 by smorty           ###   ########.fr       */
+/*   Created: 2019/05/18 17:48:28 by smorty            #+#    #+#             */
+/*   Updated: 2019/05/18 17:56:32 by smorty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft.h"
-
-void	ft_putlong(long long n)
+double	ft_atof(const char *s)
 {
-	long long tmp;
-	long long mod;
+	double	n;
+	double	d;
+	int		sign;
 
-	if (!n)
-		ft_putchar('0');
-	else
+	while ((*s >= 9 && *s <= 13) || *s == 32)
+		++s;
+	sign = (*s == '-' ? -1 : 1);
+	if (*s == '-' || *s == '+')
+		++s;
+	n = 0;
+	while (*s >= '0' && *s <= '9')
 	{
-		tmp = (n < 0 ? n / -10 : n / 10);
-		mod = (n < 0 ? -1 : 1);
-		if (n < 0)
-			ft_putchar('-');
-		while (tmp)
-		{
-			tmp /= 10;
-			mod *= 10;
-		}
-		while (n)
-		{
-			ft_putchar(n / mod + '0');
-			n %= mod;
-			mod /= 10;
-		}
+		n = n * 10 + (*s - '0');
+		++s;
 	}
+	if (*s == '.')
+		++s;
+	d = 10;
+	while (*s >= '0' && *s <= '9')
+	{
+		n += (*s - '0') / d;
+		d *= 10;
+		++s;
+	}
+	return (n * sign);
 }
