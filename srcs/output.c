@@ -1,18 +1,50 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   utility.c                                          :+:      :+:    :+:   */
+/*   output.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: smorty <smorty@student.21school.ru>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/09 17:25:04 by smorty            #+#    #+#             */
-/*   Updated: 2019/05/16 23:28:40 by smorty           ###   ########.fr       */
+/*   Updated: 2019/05/19 20:44:56 by smorty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_printf.h"
 
-char *get_width(t_frmt *prm)
+void	print_buf(void)
+{
+	int printed;
+
+	printed = write(1, g_buf, g_len);
+	if (printed < 0)
+		g_error = -1;
+	else
+		g_printed += printed;
+	g_len = 0;
+}
+
+void	char_to_buf(char c)
+{
+	*(g_buf + g_len) = c;
+	++g_len;
+	if (g_len == BUFF_SIZE)
+		print_buf();
+}
+
+void	string_to_buf(char *s)
+{
+	while (*s)
+	{
+		*(g_buf + g_len) = *s;
+		++s;
+		++g_len;
+		if (g_len == BUFF_SIZE)
+			print_buf();
+	}
+}
+
+char	*make_width(t_frmt *prm)
 {
 	char *width;
 
@@ -31,34 +63,22 @@ char *get_width(t_frmt *prm)
 	return (width);
 }
 
-void move_to_buf(char *s)
-{
-	while (*s)
-	{
-		*(g_buf + g_len) = *s;
-		++s;
-		++g_len;
-		if (g_len == BUFF_SIZE)
-			print_buf();
-	}
-}
-
-void to_print(char *out, char *width, t_frmt *prm)
+void	to_print(char *out, char *width, t_frmt *prm)
 {
 	if (!(prm->flags & F_MINUS) && width)
 	{
-		move_to_buf(width);
+		string_to_buf(width);
 		free(width);
 	}
 	if (out)
 	{
 		*(out + prm->len) = 0;
-		move_to_buf(out);
+		string_to_buf(out);
 		free(out);
 	}
 	if ((prm->flags & F_MINUS) && width)
 	{
-		move_to_buf(width);
+		string_to_buf(width);
 		free(width);
 	}
 }

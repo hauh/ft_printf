@@ -6,43 +6,43 @@
 /*   By: smorty <smorty@student.21school.ru>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/04 17:02:25 by smorty            #+#    #+#             */
-/*   Updated: 2019/05/16 23:27:54 by smorty           ###   ########.fr       */
+/*   Updated: 2019/05/19 23:11:03 by smorty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_printf.h"
 
-void			print_formatted(va_list argp, t_frmt *params)
+void			print_formatted(va_list argp, t_frmt *prm)
 {
-	if ((*params).spec == 'd' || (*params).spec == 'i' || (*params).spec == 'D')
-		process_d(argp, params);
-	if ((*params).spec == 'u' || (*params).spec == 'U')
-		process_u(argp, params);
-	if ((*params).spec == 'o' || (*params).spec == 'O')
-		process_o(argp, params);
-	if ((*params).spec == 'x' || (*params).spec == 'X' || (*params).spec == 'p')
-		process_x(argp, params);
-	if ((*params).spec == 'b' || (*params).spec == 'B')
-		process_b(argp, params);
-	if (S_REA((*params).spec))
+	if (prm->spec == 'd' || prm->spec == 'i' || prm->spec == 'D')
+		process_d(argp, prm);
+	if (prm->spec == 'u' || prm->spec == 'U')
+		process_u(argp, prm);
+	if (prm->spec == 'o' || prm->spec == 'O')
+		process_o(argp, prm);
+	if (prm->spec == 'x' || prm->spec == 'X' || prm->spec == 'p')
+		process_x(argp, prm);
+	if (prm->spec == 'b' || prm->spec == 'B')
+		process_b(argp, prm);
+	if (S_REA(prm->spec))
 	{
-		if ((*params).mod == LD)
-			process_feg(va_arg(argp, long double), params);
+		if (prm->flags & F_LONGD)
+			process_feg(va_arg(argp, long double), prm);
 		else
-			process_feg(va_arg(argp, double), params);
+			process_feg(va_arg(argp, double), prm);
 	}
-	if ((*params).spec == 'c' || (*params).spec == 'C')
+	if (prm->spec == 'c' || prm->spec == 'C')
 	{
-		if ((*params).mod == L || (*params).mod == LL || (*params).spec == 'C')
-			print_c((const wchar_t)va_arg(argp, int), params);
+		if (prm->mod == L || prm->mod == LL || prm->spec == 'C')
+			print_c((const wchar_t)va_arg(argp, int), prm);
 		else
-			print_c((const char)va_arg(argp, int), params);
+			print_c((const char)va_arg(argp, int), prm);
 	}
-	if ((*params).spec == 's' || (*params).spec == 'S')
+	if (prm->spec == 's' || prm->spec == 'S')
 	{
-		if ((*params).mod == L || (*params).mod == LL || (*params).spec == 'S')
-			print_ws(va_arg(argp, wchar_t *), params);
+		if (prm->mod == L || prm->mod == LL || prm->spec == 'S')
+			print_ws(va_arg(argp, wchar_t *), prm);
 		else
-			print_s(va_arg(argp, char *), params);
+			print_s(va_arg(argp, char *), prm);
 	}
 }

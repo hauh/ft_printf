@@ -6,7 +6,7 @@
 /*   By: smorty <smorty@student.21school.ru>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/06 16:58:45 by smorty            #+#    #+#             */
-/*   Updated: 2019/05/16 23:20:43 by smorty           ###   ########.fr       */
+/*   Updated: 2019/05/19 19:57:40 by smorty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,7 +59,7 @@ static void	process_o_mod(uintmax_t n, t_frmt *prm)
 		prm->len = (prm->flags & F_HASH ? 1 : 0);
 	else
 		otoa(out + prm->len - 1, n);
-	width = get_width(prm);
+	width = make_width(prm);
 	to_print(out, width, prm);
 }
 

@@ -6,7 +6,7 @@
 /*   By: smorty <smorty@student.21school.ru>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/02 14:08:11 by smorty            #+#    #+#             */
-/*   Updated: 2019/05/17 16:24:52 by smorty           ###   ########.fr       */
+/*   Updated: 2019/05/19 23:11:47 by smorty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,16 +26,28 @@
 # define SPEC(c) (S_INT(c) || S_BAS(c) || S_REA(c) || S_CHA(c) || S_MSC(c))
 # define FLAG(c) (c == '-' || c == '+' || c == ' ' || c == '#' || c == '0')
 # define MOD(c) (c == 'h' || c == 'l' || c == 'j' || c == 'z' || c == 'L')
-# define MAX(a, b) (a > b ? a : b)
-# define MIN(a, b) (a < b ? a : b)
+
 # define F_PREC 1
 # define F_MINUS 2
 # define F_PLUS 4
 # define F_SPACE 8
 # define F_HASH 16
 # define F_ZERO 32
+# define F_LONGD 64
 
-#define BUFF_SIZE 128
+# define MAX(a, b) (a > b ? a : b)
+# define MIN(a, b) (a < b ? a : b)
+# define CHECK_BUFF(x) (g_len + x > BUFF_SIZE ? print_buf() : 0)
+
+# define COLOR_RED     "\x1b[31m"
+# define COLOR_GREEN   "\x1b[32m"
+# define COLOR_YELLOW  "\x1b[33m"
+# define COLOR_BLUE    "\x1b[34m"
+# define COLOR_MAGENTA "\x1b[35m"
+# define COLOR_CYAN    "\x1b[36m"
+# define COLOR_RESET   "\x1b[0m"
+
+# define BUFF_SIZE 128
 
 extern char	g_buf[BUFF_SIZE];
 extern int	g_len;
@@ -44,7 +56,7 @@ extern int	g_error;
 
 enum			e_modifiers
 {
-	NO, HH, H, L, LL, Z, J, LD
+	NO, HH, H, L, LL, Z, J,
 };
 
 typedef struct	s_frmt
@@ -59,7 +71,8 @@ typedef struct	s_frmt
 }				t_frmt;
 
 int				ft_printf(const char *format, ...);
-void			parse_format(const char **format, va_list argp);
+void			parse_params(const char **format, va_list argp, t_frmt prm);
+void			check_color(const char **format);
 void			print_formatted(va_list argp, t_frmt *prm);
 void			process_d(va_list argp, t_frmt *prm);
 void			process_u(va_list argp, t_frmt *prm);
@@ -77,10 +90,10 @@ int				prefix_fe(char *s, long double n, int flags);
 long double		round_f(long double n, int precision);
 int				get_exponent(long double *n);
 void			trim_zeros(char *s, int *precision);
-void			to_print(char *out, char *width, t_frmt *prm);
-char			*get_width(t_frmt *prm);
 void			print_buf(void);
-void			move_to_buf(char *s);
-void			error(void);
+void			char_to_buf(char c);
+void			string_to_buf(char *s);
+char			*make_width(t_frmt *prm);
+void			to_print(char *out, char *width, t_frmt *prm);
 
 #endif

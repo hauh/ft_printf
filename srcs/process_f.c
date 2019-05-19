@@ -6,7 +6,7 @@
 /*   By: smorty <smorty@student.21school.ru>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/09 15:53:23 by smorty            #+#    #+#             */
-/*   Updated: 2019/05/16 23:20:24 by smorty           ###   ########.fr       */
+/*   Updated: 2019/05/19 19:57:40 by smorty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,6 +84,6 @@ void		process_f(long double n, t_frmt *prm)
 	}
 	floattoa(out, n, prm);
 	prm->len = ft_strlen(out);
-	width = get_width(prm);
+	width = make_width(prm);
 	to_print(out, width, prm);
 }
