@@ -6,7 +6,7 @@
 /*   By: smorty <smorty@student.21school.ru>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/02 14:55:41 by smorty            #+#    #+#             */
-/*   Updated: 2019/05/17 16:26:29 by smorty           ###   ########.fr       */
+/*   Updated: 2019/05/19 23:11:58 by smorty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,54 +17,58 @@ int		g_len;
 int		g_printed;
 int		g_error;
 
-void error(void)
+static t_frmt	initialize_params(void)
 {
-	g_error = -1;
+	t_frmt prm;
+
+	prm.flags = 0;
+	prm.mod = 0;
+	prm.width = 0;
+	prm.precision = 1;
+	prm.spec = 0;
+	prm.fd = 1;
+	return (prm);
 }
 
-void print_buf(void)
+static void		parse_string(const char **format, va_list argp)
 {
-	g_printed += write(1, g_buf, g_len);
-	ft_bzero(g_buf, BUFF_SIZE);
-	g_len = 0;
+	while (**format)
+	{
+		if (**format == '%')
+		{
+			++(*format);
+			if (**format == '%')
+			{
+				char_to_buf('%');
+				++(*format);
+			}
+			else if (**format)
+				parse_params(format, argp, initialize_params());
+		}
+		else if (**format == '{')
+			check_color(format);
+		else
+		{
+			char_to_buf(**format);
+			++(*format);
+		}
+	}
 }
 
-int		ft_printf(const char *format, ...)
+int				ft_printf(const char *format, ...)
 {
 	va_list argp;
 
 	g_printed = 0;
 	g_error = 0;
-	g_len = 0;
 	if (format)
 	{
+		g_len = 0;
 		va_start(argp, format);
-		while (*format)
-		{
-			if (*format == '%')
-			{
-				++format;
-				if (*format == '%')
-				{
-					*(g_buf + g_len) = '%';
-					++g_len;
-					if (g_len == BUFF_SIZE)
-						print_buf();
-				}
-				else
-					parse_format(&format, argp);
-			}
-			else
-			{
-				*(g_buf + g_len) = *format;
-				++g_len;
-				if (g_len == BUFF_SIZE)
-					print_buf();
-			}
-			++format;
-		}
+		parse_string(&format, argp);
 		va_end(argp);
 		print_buf();
+		ft_bzero(g_buf, BUFF_SIZE);
 	}
 	return (g_error ? g_error : g_printed);
 }
