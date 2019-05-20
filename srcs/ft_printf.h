@@ -6,7 +6,7 @@
 /*   By: smorty <smorty@student.21school.ru>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/02 14:08:11 by smorty            #+#    #+#             */
-/*   Updated: 2019/05/19 23:11:47 by smorty           ###   ########.fr       */
+/*   Updated: 2019/05/20 21:34:40 by smorty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,6 +53,7 @@ extern char	g_buf[BUFF_SIZE];
 extern int	g_len;
 extern int	g_printed;
 extern int	g_error;
+extern int	g_fd;
 
 enum			e_modifiers
 {
@@ -67,24 +68,24 @@ typedef struct	s_frmt
 	int					precision;
 	int					width;
 	int					spec;
-	int					fd;
 }				t_frmt;
 
 int				ft_printf(const char *format, ...);
-void			parse_params(const char **format, va_list argp, t_frmt prm);
-void			check_color(const char **format);
-void			print_formatted(va_list argp, t_frmt *prm);
-void			process_d(va_list argp, t_frmt *prm);
-void			process_u(va_list argp, t_frmt *prm);
-void			process_o(va_list argp, t_frmt *prm);
-void			process_x(va_list argp, t_frmt *prm);
-void			process_b(va_list argp, t_frmt *prm);
+void			check_color_and_fd(const char **format);
+void			parse_params(const char **format, va_list *argp, t_frmt prm);
+void			process_format(va_list *argp, t_frmt *prm);
+void			process_d(va_list *argp, t_frmt *prm);
+void			process_u(va_list *argp, t_frmt *prm);
+void			process_o(va_list *argp, t_frmt *prm);
+void			process_x(va_list *argp, t_frmt *prm);
+void			process_b(va_list *argp, t_frmt *prm);
+void			process_c(const wchar_t c, t_frmt *prm);
+void			process_s(const char *s, t_frmt *prm);
+void			process_cs(va_list *argp, t_frmt *prm);
+void			process_feg(va_list *argp, t_frmt *prm);
 void			process_f(long double n, t_frmt *prm);
 void			process_e(long double n, t_frmt *prm);
-void			process_feg(long double n, t_frmt *prm);
-void			print_c(const wchar_t c, t_frmt *prm);
-void			print_s(char *s, t_frmt *prm);
-void			print_ws(wchar_t *s, t_frmt *prm);
+int				unicode(wchar_t c);
 void			fracttoa(char *s, double n, int precision);
 int				prefix_fe(char *s, long double n, int flags);
 long double		round_f(long double n, int precision);

@@ -1,74 +1,18 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   print_cs.c                                         :+:      :+:    :+:   */
+/*   process_cs.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: smorty <smorty@student.21school.ru>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/03 19:49:39 by smorty            #+#    #+#             */
-/*   Updated: 2019/05/19 20:23:15 by smorty           ###   ########.fr       */
+/*   Updated: 2019/05/20 21:22:43 by smorty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_printf.h"
 
-
-static int	unicode(wchar_t c)
-{
-	if (c <= 0x7F)
-	{
-		*(g_buf + g_len) = (c & 0x7F);
-		++g_len;
-		if (g_len == BUFF_SIZE)
-			print_buf();
-		return (1);
-	}
-	else if (c <= 0x7FF && BUFF_SIZE >= 2)
-	{
-		if (BUFF_SIZE - g_len < 2)
-			print_buf();
-		*(g_buf + g_len + 1) = 0x80 | (c & 0x3F);
-		c = (c >> 6);
-		*(g_buf + g_len) = 0xC0 | (c & 0x1F);
-		g_len += 2;
-		if (g_len == BUFF_SIZE)
-			print_buf();
-		return (2);
-	}
-	else if (c <= 0xFFFF && BUFF_SIZE >= 3)
-	{
-		if (BUFF_SIZE - g_len < 3)
-			print_buf();
-		*(g_buf + g_len + 2) = 0x80 | (c & 0x3F);
-		c = (c >> 6);
-		*(g_buf + g_len + 1) = 0x80 | (c & 0x3F);
-		c = (c >> 6);
-		*(g_buf + g_len) = 0xE0 | (c & 0xF);
-		g_len += 3;
-		if (g_len == BUFF_SIZE)
-			print_buf();
-		return (3);
-	}
-	else if (BUFF_SIZE >= 4)
-	{
-		if (BUFF_SIZE - g_len < 4)
-			print_buf();
-		*(g_buf + g_len + 3) = 0x80 | (c & 0x3F);
-		c = (c >> 6);
-		*(g_buf + g_len + 2) = 0x80 | (c & 0x3F);
-		c = (c >> 6);
-		*(g_buf + g_len + 1) = 0x80 | (c & 0x3F);
-		c = (c >> 6);
-		*(g_buf + g_len) = 0xF0 | (c & 0x7);
-		g_len += 4;
-		if (g_len == BUFF_SIZE)
-			print_buf();
-		return (4);
-	}
-	return (0);
-}
-
-void		print_c(const wchar_t c, t_frmt *prm)
+void		process_c(const wchar_t c, t_frmt *prm)
 {
 	char	*width;
 
@@ -84,19 +28,14 @@ void		print_c(const wchar_t c, t_frmt *prm)
 	if (prm->mod == L || prm->spec == 'C')
 		unicode(c);
 	else
-	{
-		*(g_buf + g_len) = c;
-		++g_len;
-		if (g_len == BUFF_SIZE)
-			print_buf();
-	}
+		char_to_buf(c);
 	if (width && prm->flags & F_MINUS)
 		string_to_buf(width);
 	if (width)
 		free(width);
 }
 
-void		print_s(char *s, t_frmt *prm)
+void		process_s(const char *s, t_frmt *prm)
 {
 	char	*width;
 
@@ -112,12 +51,9 @@ void		print_s(char *s, t_frmt *prm)
 		string_to_buf(width);
 	while (prm->len > 0)
 	{
-			*(g_buf + g_len) = *s;
-			++g_len;
-			if (g_len == BUFF_SIZE)
-				print_buf();
-			--prm->len;
-			++s;
+		char_to_buf(*s);
+		--prm->len;
+		++s;
 	}
 	if (width && prm->flags & F_MINUS)
 		string_to_buf(width);
@@ -127,8 +63,8 @@ void		print_s(char *s, t_frmt *prm)
 
 static int	strsize(const wchar_t *s, t_frmt *prm)
 {
-	int i;
 	int size;
+	int i;
 
 	i = 0;
 	size = 0;
@@ -154,12 +90,12 @@ static int	strsize(const wchar_t *s, t_frmt *prm)
 	return ((prm->flags & F_PREC) && prm->precision < 0 ? size - i : size);
 }
 
-void		print_ws(wchar_t *s, t_frmt *prm)
+static void	process_ls(const wchar_t *s, t_frmt *prm)
 {
 	char	*width;
 
 	if (!s)
-		print_s(NULL, prm);
+		process_s(NULL, prm);
 	else
 	{
 		if ((prm->flags & (F_ZERO | F_MINUS)) == (F_ZERO | F_MINUS))
@@ -177,5 +113,23 @@ void		print_ws(wchar_t *s, t_frmt *prm)
 			string_to_buf(width);
 		if (width)
 			free(width);
+	}
+}
+
+void		process_cs(va_list *argp, t_frmt *prm)
+{
+	if (prm->spec == 'c' || prm->spec == 'C')
+	{
+		if (prm->mod == L || prm->mod == LL || prm->spec == 'C')
+			process_c((const wchar_t)va_arg(*argp, int), prm);
+		else
+			process_c((const char)va_arg(*argp, int), prm);
+	}
+	else
+	{
+		if (prm->mod == L || prm->mod == LL || prm->spec == 'S')
+			process_ls(va_arg(*argp, const wchar_t *), prm);
+		else
+			process_s(va_arg(*argp, const char *), prm);
 	}
 }

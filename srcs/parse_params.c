@@ -6,7 +6,7 @@
 /*   By: smorty <smorty@student.21school.ru>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/02 16:11:46 by smorty            #+#    #+#             */
-/*   Updated: 2019/05/19 23:10:12 by smorty           ###   ########.fr       */
+/*   Updated: 2019/05/20 21:21:48 by smorty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,12 +54,12 @@ static void		get_mod(const char **format, t_frmt *prm)
 	++(*format);
 }
 
-static void		get_precision(const char **format, va_list argp, t_frmt *prm)
+static void		get_precision(const char **format, va_list *argp, t_frmt *prm)
 {
 	++(*format);
 	if (**format == '*')
 	{
-		prm->precision = va_arg(argp, int) + 1;
+		prm->precision = va_arg(*argp, int) + 1;
 		++(*format);
 	}
 	else
@@ -74,11 +74,11 @@ static void		get_precision(const char **format, va_list argp, t_frmt *prm)
 		prm->flags |= F_PREC;
 }
 
-static void		get_width(const char **format, va_list argp, t_frmt *prm)
+static void		get_width(const char **format, va_list *argp, t_frmt *prm)
 {
 	if (**format == '*')
 	{
-		prm->width = va_arg(argp, int);
+		prm->width = va_arg(*argp, int);
 		if (prm->width < 0)
 		{
 			prm->width = ~prm->width + 1;
@@ -94,7 +94,7 @@ static void		get_width(const char **format, va_list argp, t_frmt *prm)
 	}
 }
 
-void			parse_params(const char **format, va_list argp, t_frmt prm)
+void			parse_params(const char **format, va_list *argp, t_frmt prm)
 {
 	while (!SPEC(**format))
 	{
@@ -110,7 +110,7 @@ void			parse_params(const char **format, va_list argp, t_frmt prm)
 		{
 			if (**format)
 			{
-				print_c(**format, &prm);
+				process_c(**format, &prm);
 				++(*format);
 			}
 			return ;
@@ -120,5 +120,5 @@ void			parse_params(const char **format, va_list argp, t_frmt prm)
 	if (**format == 'D' || **format == 'U' || **format == 'O')
 		prm.mod = J;
 	++(*format);
-	print_formatted(argp, &prm);
+	process_format(argp, &prm);
 }

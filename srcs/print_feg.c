@@ -6,7 +6,7 @@
 /*   By: smorty <smorty@student.21school.ru>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/12 18:18:09 by smorty            #+#    #+#             */
-/*   Updated: 2019/05/16 23:21:50 by smorty           ###   ########.fr       */
+/*   Updated: 2019/05/20 21:54:49 by smorty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,114 +22,51 @@ int					get_exponent(long double *n)
 	while (*n < 1 && *n > -1)
 	{
 		*n *= 10;
-		exponent--;
+		--exponent;
 	}
 	while (*n >= 10 || *n <= -10)
 	{
 		*n /= 10;
-		exponent++;
+		++exponent;
 	}
 	return (exponent);
 }
 
-long double			round_f(long double n, int precision)
+static int			nan_or_inf(long double n, t_frmt *prm)
 {
-	long double t;
-
-	t = 0.5;
-	while (precision)
+	if (n != n)
 	{
-		t /= 10;
-		precision--;
+		if (prm->flags & F_PREC)
+			(prm->flags ^= F_PREC);
+		process_s((prm->spec > 100 ? "nan" : "NAN"), prm);
+		return (1);
 	}
-	if (n > 0)
-		n += t;
-	else if (n < 0)
-		n -= t;
-	return (n);
-}
-
-void				trim_zeros(char *s, int *precision)
-{
-	if (*precision)
+	if (n && n * 2 == n)
 	{
-		while (*s == '0')
-		{
-			*s = ' ';
-			s--;
-			(*precision)--;
-		}
-		if (*s == '.')
-		{
-			*s = ' ';
-			(*precision)--;
-		}
-	}
-}
-
-int					prefix_fe(char *s, long double n, int flags)
-{
-	if (n < 0)
-		*s = '-';
-	else if (flags & F_PLUS)
-		*s = '+';
-	else if (flags & F_SPACE)
-		*s = ' ';
-	else
-		return (0);
-	return (1);	
-}
-
-static void			round_fract(char *s)
-{
-	int diff;
-
-	diff = 1;
-	while (*s != '.' && diff)
-	{
-		s--;
-		(*s)++;
-		if (*s > '9')
-			*s = '0';
-		else
-			diff = 0;
-	}
-}
-
-void				fracttoa(char *s, double n, int precision)
-{
-	if (precision)
-	{
+		if (prm->flags & F_PREC)
+			(prm->flags ^= F_PREC);
 		if (n < 0)
-			n *= -1;
-		n -= (intmax_t)n;
-		while (precision)
-		{
-			n = n * 10;
-			*s = (int)n + '0';
-			n -= (int)n;
-			s++;
-			precision--;
-		}
-		n = n * 10;
-		if ((int)n >= 5)
-			round_fract(s);
+			process_s((prm->spec > 100 ? "-inf" : "-INF"), prm);
+		else if (prm->flags & F_PLUS)
+			process_s((prm->spec > 100 ? "+inf" : "+INF"), prm);
+		else if (prm->flags & F_SPACE)
+			process_s((prm->spec > 100 ? " inf" : " INF"), prm);
+		else
+			process_s((prm->spec > 100 ? "inf" : "INF"), prm);
+		return (1);
 	}
+	return (0);
 }
 
-void				process_feg(long double n, t_frmt *prm)
+static void			process_feg_mod(long double n, t_frmt *prm)
 {
 	long double	e;
 	int			i;
-	char		spec;
+	int			spec;
 
+	if (nan_or_inf(n, prm))
+		return ;
 	spec = prm->spec;
-	if (!(prm->flags & F_PREC))
-		prm->precision = 6;
-	else if (prm->precision > 1)
-		prm->precision--;
-	if ((prm->flags & (F_ZERO | F_MINUS)) == (F_ZERO | F_MINUS))
-		prm->flags ^= F_ZERO;
 	e = n;
 	i = get_exponent(&e);
 	if (spec == 'g' || spec == 'G')
@@ -137,16 +74,28 @@ void				process_feg(long double n, t_frmt *prm)
 		if (i < prm->precision && i >= -4)
 			prm->precision -= i;
 		else
-			spec--;
+			--spec;
 		if (prm->precision > 0)
-			prm->precision--;
-		spec--;
+			--prm->precision;
+		--spec;
 	}
-	prm->len = i;
-	if (prm->len < 0)
-		prm->len = ~prm->len + 1;
+	prm->len = (i < 0 ? ~i + 1 : i);
 	if (spec == 'e' || spec == 'E')
 		process_e(n, prm);
 	else
 		process_f(n, prm);
+}
+
+void				process_feg(va_list *argp, t_frmt *prm)
+{
+	if (!(prm->flags & F_PREC))
+		prm->precision = 6;
+	else if (prm->precision > 1)
+		--prm->precision;
+	if ((prm->flags & (F_ZERO | F_MINUS)) == (F_ZERO | F_MINUS))
+		prm->flags ^= F_ZERO;
+	if (prm->flags & F_LONGD)
+		process_feg_mod(va_arg(*argp, long double), prm);
+	else
+		process_feg_mod(va_arg(*argp, double), prm);
 }

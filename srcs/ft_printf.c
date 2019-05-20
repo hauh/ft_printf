@@ -6,7 +6,7 @@
 /*   By: smorty <smorty@student.21school.ru>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/02 14:55:41 by smorty            #+#    #+#             */
-/*   Updated: 2019/05/19 23:11:58 by smorty           ###   ########.fr       */
+/*   Updated: 2019/05/20 21:13:56 by smorty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@ char	g_buf[BUFF_SIZE];
 int		g_len;
 int		g_printed;
 int		g_error;
+int		g_fd;
 
 static t_frmt	initialize_params(void)
 {
@@ -26,11 +27,10 @@ static t_frmt	initialize_params(void)
 	prm.width = 0;
 	prm.precision = 1;
 	prm.spec = 0;
-	prm.fd = 1;
 	return (prm);
 }
 
-static void		parse_string(const char **format, va_list argp)
+static void		parse_string(const char **format, va_list *argp)
 {
 	while (**format)
 	{
@@ -46,7 +46,7 @@ static void		parse_string(const char **format, va_list argp)
 				parse_params(format, argp, initialize_params());
 		}
 		else if (**format == '{')
-			check_color(format);
+			check_color_and_fd(format);
 		else
 		{
 			char_to_buf(**format);
@@ -64,11 +64,11 @@ int				ft_printf(const char *format, ...)
 	if (format)
 	{
 		g_len = 0;
+		g_fd = 1;
 		va_start(argp, format);
-		parse_string(&format, argp);
+		parse_string(&format, &argp);
 		va_end(argp);
 		print_buf();
-		ft_bzero(g_buf, BUFF_SIZE);
 	}
 	return (g_error ? g_error : g_printed);
 }
