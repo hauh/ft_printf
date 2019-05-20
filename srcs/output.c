@@ -6,7 +6,7 @@
 /*   By: smorty <smorty@student.21school.ru>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/09 17:25:04 by smorty            #+#    #+#             */
-/*   Updated: 2019/05/19 20:44:56 by smorty           ###   ########.fr       */
+/*   Updated: 2019/05/20 18:48:20 by smorty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@ void	print_buf(void)
 {
 	int printed;
 
-	printed = write(1, g_buf, g_len);
+	printed = write(g_fd, g_buf, g_len);
 	if (printed < 0)
 		g_error = -1;
 	else

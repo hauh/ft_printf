@@ -6,7 +6,7 @@
 /*   By: smorty <smorty@student.21school.ru>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/04 16:27:53 by smorty            #+#    #+#             */
-/*   Updated: 2019/05/19 19:57:40 by smorty           ###   ########.fr       */
+/*   Updated: 2019/05/20 21:22:54 by smorty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,20 +82,20 @@ static void	process_d_mod(intmax_t n, t_frmt *prm)
 	to_print(out, width, prm);
 }
 
-void		process_d(va_list argp, t_frmt *params)
+void		process_d(va_list *argp, t_frmt *params)
 {
 	if ((*params).mod == HH)
-		process_d_mod((char)va_arg(argp, int), params);
+		process_d_mod((char)va_arg(*argp, int), params);
 	else if ((*params).mod == H)
-		process_d_mod((short)va_arg(argp, int), params);
+		process_d_mod((short)va_arg(*argp, int), params);
 	else if ((*params).mod == NO)
-		process_d_mod(va_arg(argp, int), params);
+		process_d_mod(va_arg(*argp, int), params);
 	else if ((*params).mod == L)
-		process_d_mod(va_arg(argp, long), params);
+		process_d_mod(va_arg(*argp, long), params);
 	else if ((*params).mod == LL)
-		process_d_mod(va_arg(argp, long long), params);
+		process_d_mod(va_arg(*argp, long long), params);
 	else if ((*params).mod == Z)
-		process_d_mod(va_arg(argp, ssize_t), params);
+		process_d_mod(va_arg(*argp, ssize_t), params);
 	else if ((*params).mod == J)
-		process_d_mod(va_arg(argp, intmax_t), params);
+		process_d_mod(va_arg(*argp, intmax_t), params);
 }

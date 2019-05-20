@@ -6,7 +6,7 @@
 /*   By: smorty <smorty@student.21school.ru>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/15 13:27:56 by smorty            #+#    #+#             */
-/*   Updated: 2019/05/19 19:57:40 by smorty           ###   ########.fr       */
+/*   Updated: 2019/05/20 21:18:49 by smorty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,25 +81,25 @@ static void	process_x_mod(uintmax_t n, t_frmt *prm)
 	to_print(out, width, prm);
 }
 
-void		process_x(va_list argp, t_frmt *params)
+void		process_x(va_list *argp, t_frmt *params)
 {
 	if ((*params).spec == 'p')
 	{
 		(*params).flags |= F_HASH;
-		process_x_mod(va_arg(argp, intptr_t), params);
+		process_x_mod(va_arg(*argp, intptr_t), params);
 	}
 	else if ((*params).mod == HH)
-		process_x_mod((unsigned char)va_arg(argp, unsigned int), params);
+		process_x_mod((unsigned char)va_arg(*argp, unsigned int), params);
 	else if ((*params).mod == H)
-		process_x_mod((unsigned short)va_arg(argp, unsigned int), params);
+		process_x_mod((unsigned short)va_arg(*argp, unsigned int), params);
 	else if ((*params).mod == NO)
-		process_x_mod(va_arg(argp, unsigned int), params);
+		process_x_mod(va_arg(*argp, unsigned int), params);
 	else if ((*params).mod == L)
-		process_x_mod(va_arg(argp, unsigned long), params);
+		process_x_mod(va_arg(*argp, unsigned long), params);
 	else if ((*params).mod == LL)
-		process_x_mod(va_arg(argp, unsigned long long), params);
+		process_x_mod(va_arg(*argp, unsigned long long), params);
 	else if ((*params).mod == Z)
-		process_x_mod(va_arg(argp, size_t), params);
+		process_x_mod(va_arg(*argp, size_t), params);
 	else if ((*params).mod == J)
-		process_x_mod(va_arg(argp, uintmax_t), params);
+		process_x_mod(va_arg(*argp, uintmax_t), params);
 }

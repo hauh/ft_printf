@@ -6,7 +6,7 @@
 /*   By: smorty <smorty@student.21school.ru>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/06 16:58:45 by smorty            #+#    #+#             */
-/*   Updated: 2019/05/19 19:57:40 by smorty           ###   ########.fr       */
+/*   Updated: 2019/05/20 21:23:26 by smorty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,20 +63,20 @@ static void	process_o_mod(uintmax_t n, t_frmt *prm)
 	to_print(out, width, prm);
 }
 
-void		process_o(va_list argp, t_frmt *params)
+void		process_o(va_list *argp, t_frmt *params)
 {
 	if ((*params).mod == HH)
-		process_o_mod((unsigned char)va_arg(argp, unsigned int), params);
+		process_o_mod((unsigned char)va_arg(*argp, unsigned int), params);
 	else if ((*params).mod == H)
-		process_o_mod((unsigned short)va_arg(argp, unsigned int), params);
+		process_o_mod((unsigned short)va_arg(*argp, unsigned int), params);
 	else if ((*params).mod == NO)
-		process_o_mod(va_arg(argp, unsigned int), params);
+		process_o_mod(va_arg(*argp, unsigned int), params);
 	else if ((*params).mod == L)
-		process_o_mod(va_arg(argp, unsigned long), params);
+		process_o_mod(va_arg(*argp, unsigned long), params);
 	else if ((*params).mod == LL)
-		process_o_mod(va_arg(argp, unsigned long long), params);
+		process_o_mod(va_arg(*argp, unsigned long long), params);
 	else if ((*params).mod == Z)
-		process_o_mod(va_arg(argp, size_t), params);
+		process_o_mod(va_arg(*argp, size_t), params);
 	else if ((*params).mod == J)
-		process_o_mod(va_arg(argp, uintmax_t), params);
+		process_o_mod(va_arg(*argp, uintmax_t), params);
 }
