@@ -6,7 +6,7 @@
 /*   By: smorty <smorty@student.21school.ru>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/20 16:34:30 by smorty            #+#    #+#             */
-/*   Updated: 2019/05/20 17:09:44 by smorty           ###   ########.fr       */
+/*   Updated: 2019/05/21 14:58:03 by smorty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,7 +55,7 @@ int			unicode(wchar_t c)
 {
 	if (c <= 0x7F)
 	{
-		char_to_buf(c & 0x7F);
+		char_to_buf(c & 0x7F, 1);
 		return (1);
 	}
 	else if (c <= 0x7FF && BUFF_SIZE >= 2)

@@ -6,7 +6,7 @@
 /*   By: smorty <smorty@student.21school.ru>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/14 20:24:09 by smorty            #+#    #+#             */
-/*   Updated: 2019/05/20 21:23:38 by smorty           ###   ########.fr       */
+/*   Updated: 2019/05/21 18:04:18 by smorty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,6 +67,7 @@ static void	process_b_mod(uintmax_t n, t_frmt *prm)
 		prm->len = 0;
 	else
 		btoa(out + prm->len, n);
+	*(out + prm->len) = 0;
 	width = make_width(prm);
 	prefix_b((width && (prm->flags & F_ZERO) ? width : out), !n, prm);
 	to_print(out, width, prm);

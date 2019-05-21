@@ -6,7 +6,7 @@
 /*   By: smorty <smorty@student.21school.ru>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/14 16:40:04 by smorty            #+#    #+#             */
-/*   Updated: 2019/05/19 19:57:40 by smorty           ###   ########.fr       */
+/*   Updated: 2019/05/21 18:04:45 by smorty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,7 +61,6 @@ static void	etoa(char *s, long double n, t_frmt *prm)
 void		process_e(long double n, t_frmt *prm)
 {
 	char	*out;
-	char	*width;
 
 	prm->len = prm->len + prm->precision;
 	if (n < 0 || prm->flags & (F_PLUS | F_SPACE))
@@ -73,6 +72,6 @@ void		process_e(long double n, t_frmt *prm)
 	}
 	etoa(out, n, prm);
 	prm->len = ft_strlen(out);
-	width = make_width(prm);
-	to_print(out, width, prm);
+	*(out + prm->len) = 0;
+	to_print(out, make_width(prm), prm);
 }

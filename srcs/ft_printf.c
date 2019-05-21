@@ -6,7 +6,7 @@
 /*   By: smorty <smorty@student.21school.ru>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/02 14:55:41 by smorty            #+#    #+#             */
-/*   Updated: 2019/05/20 21:13:56 by smorty           ###   ########.fr       */
+/*   Updated: 2019/05/21 14:57:31 by smorty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,7 @@ static void		parse_string(const char **format, va_list *argp)
 			++(*format);
 			if (**format == '%')
 			{
-				char_to_buf('%');
+				char_to_buf('%', 1);
 				++(*format);
 			}
 			else if (**format)
@@ -49,7 +49,7 @@ static void		parse_string(const char **format, va_list *argp)
 			check_color_and_fd(format);
 		else
 		{
-			char_to_buf(**format);
+			char_to_buf(**format, 1);
 			++(*format);
 		}
 	}

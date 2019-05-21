@@ -6,7 +6,7 @@
 /*   By: smorty <smorty@student.21school.ru>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/20 18:08:17 by smorty            #+#    #+#             */
-/*   Updated: 2019/05/20 20:48:00 by smorty           ###   ########.fr       */
+/*   Updated: 2019/05/21 16:38:58 by smorty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,7 +49,7 @@ void		trim_zeros(char *s, int *precision)
 
 int			prefix_fe(char *s, long double n, int flags)
 {
-	if (n < 0)
+	if (n < 0 || 1 / n < 0)
 		*s = '-';
 	else if (flags & F_PLUS)
 		*s = '+';
@@ -76,7 +76,7 @@ static void	round_fract(char *s)
 	}
 }
 
-void		fracttoa(char *s, double n, int precision)
+void		fracttoa(char *s, long double n, int precision)
 {
 	if (precision)
 	{
