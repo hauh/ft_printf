@@ -6,7 +6,7 @@
 /*   By: smorty <smorty@student.21school.ru>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/06 15:57:07 by smorty            #+#    #+#             */
-/*   Updated: 2019/05/20 21:23:15 by smorty           ###   ########.fr       */
+/*   Updated: 2019/05/21 18:04:54 by smorty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,6 @@ static void	utoa(char *s, uintmax_t n)
 static void	process_u_mod(uintmax_t n, t_frmt *prm)
 {
 	char	*out;
-	char	*width;
 	int		precision;
 
 	if (prm->flags & F_ZERO && prm->flags & (F_MINUS | F_PREC))
@@ -59,8 +58,8 @@ static void	process_u_mod(uintmax_t n, t_frmt *prm)
 		prm->len = 0;
 	else
 		utoa(out + prm->len, n);
-	width = make_width(prm);
-	to_print(out, width, prm);
+	*(out + prm->len) = 0;
+	to_print(out, make_width(prm), prm);
 }
 
 void		process_u(va_list *argp, t_frmt *params)

@@ -6,7 +6,7 @@
 /*   By: smorty <smorty@student.21school.ru>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/15 13:27:56 by smorty            #+#    #+#             */
-/*   Updated: 2019/05/20 21:18:49 by smorty           ###   ########.fr       */
+/*   Updated: 2019/05/21 18:04:41 by smorty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,6 +76,7 @@ static void	process_x_mod(uintmax_t n, t_frmt *prm)
 		prm->len = (prm->spec == 'p' ? 2 : 0);
 	else
 		xtoa(out + prm->len - 1, n, prm->spec);
+	*(out + prm->len) = 0;
 	width = make_width(prm);
 	prefix_x((width && (prm->flags & F_ZERO) ? width : out), !n, prm);
 	to_print(out, width, prm);

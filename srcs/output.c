@@ -6,7 +6,7 @@
 /*   By: smorty <smorty@student.21school.ru>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/09 17:25:04 by smorty            #+#    #+#             */
-/*   Updated: 2019/05/20 18:48:20 by smorty           ###   ########.fr       */
+/*   Updated: 2019/05/21 18:09:02 by smorty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,12 +24,16 @@ void	print_buf(void)
 	g_len = 0;
 }
 
-void	char_to_buf(char c)
+void	char_to_buf(char c, int n)
 {
-	*(g_buf + g_len) = c;
-	++g_len;
-	if (g_len == BUFF_SIZE)
-		print_buf();
+	while (n)
+	{
+		*(g_buf + g_len) = c;
+		++g_len;
+		if (g_len == BUFF_SIZE)
+			print_buf();
+		--n;
+	}
 }
 
 void	string_to_buf(char *s)
@@ -72,7 +76,6 @@ void	to_print(char *out, char *width, t_frmt *prm)
 	}
 	if (out)
 	{
-		*(out + prm->len) = 0;
 		string_to_buf(out);
 		free(out);
 	}

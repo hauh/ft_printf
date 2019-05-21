@@ -6,7 +6,7 @@
 /*   By: smorty <smorty@student.21school.ru>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/19 17:37:46 by smorty            #+#    #+#             */
-/*   Updated: 2019/05/20 20:41:42 by smorty           ###   ########.fr       */
+/*   Updated: 2019/05/21 14:57:21 by smorty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,7 @@ static void	set_fd(const char **format)
 	}
 	else
 	{
-		char_to_buf('{');
+		char_to_buf('{', 1);
 		*format -= len + 3;
 	}
 }
@@ -72,7 +72,7 @@ void		check_color_and_fd(const char **format)
 	}
 	else
 	{
-		char_to_buf('{');
+		char_to_buf('{', 1);
 		++(*format);
 	}
 }

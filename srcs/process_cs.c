@@ -6,7 +6,7 @@
 /*   By: smorty <smorty@student.21school.ru>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/03 19:49:39 by smorty            #+#    #+#             */
-/*   Updated: 2019/05/20 21:22:43 by smorty           ###   ########.fr       */
+/*   Updated: 2019/05/21 15:12:02 by smorty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,30 +14,25 @@
 
 void		process_c(const wchar_t c, t_frmt *prm)
 {
-	char	*width;
-
 	if ((prm->flags & (F_ZERO | F_MINUS)) == (F_ZERO | F_MINUS))
 		prm->flags ^= F_ZERO;
 	if (c <= 0x7FF)
 		prm->len = (c <= 0x7F ? 1 : 2);
 	else
 		prm->len = (c <= 0xFFFF ? 3 : 4);
-	width = make_width(prm);
-	if (width && !(prm->flags & F_MINUS))
-		string_to_buf(width);
+	if (!(prm->flags & F_MINUS) && prm->width > prm->len)
+		char_to_buf((prm->flags & F_ZERO ? '0' : ' '), prm->width - prm->len);
 	if (prm->mod == L || prm->spec == 'C')
 		unicode(c);
 	else
-		char_to_buf(c);
-	if (width && prm->flags & F_MINUS)
-		string_to_buf(width);
-	if (width)
-		free(width);
+		char_to_buf(c, 1);
+	if ((prm->flags & F_MINUS) && prm->width > prm->len)
+		char_to_buf((prm->flags & F_ZERO ? '0' : ' '), prm->width - prm->len);
 }
 
 void		process_s(const char *s, t_frmt *prm)
 {
-	char	*width;
+	int width;
 
 	if (!s)
 		s = (prm->precision - (prm->flags & F_PREC) ? "(null)" : "");
@@ -46,19 +41,17 @@ void		process_s(const char *s, t_frmt *prm)
 	prm->len = ft_strlen(s);
 	if (prm->flags & F_PREC)
 		prm->len = MIN(prm->precision - (prm->flags & F_PREC), prm->len);
-	width = make_width(prm);
-	if (width && !(prm->flags & F_MINUS))
-		string_to_buf(width);
+	width = prm->width - prm->len;
+	if (!(prm->flags & F_MINUS) && width > 0)
+		char_to_buf((prm->flags & F_ZERO ? '0' : ' '), width);
 	while (prm->len > 0)
 	{
-		char_to_buf(*s);
+		char_to_buf(*s, 1);
 		--prm->len;
 		++s;
 	}
-	if (width && prm->flags & F_MINUS)
-		string_to_buf(width);
-	if (width)
-		free(width);
+	if ((prm->flags & F_MINUS) && width > 0)
+		char_to_buf((prm->flags & F_ZERO ? '0' : ' '), width);
 }
 
 static int	strsize(const wchar_t *s, t_frmt *prm)
@@ -92,7 +85,7 @@ static int	strsize(const wchar_t *s, t_frmt *prm)
 
 static void	process_ls(const wchar_t *s, t_frmt *prm)
 {
-	char	*width;
+	int width;
 
 	if (!s)
 		process_s(NULL, prm);
@@ -101,18 +94,16 @@ static void	process_ls(const wchar_t *s, t_frmt *prm)
 		if ((prm->flags & (F_ZERO | F_MINUS)) == (F_ZERO | F_MINUS))
 			prm->flags ^= F_ZERO;
 		prm->len = strsize(s, prm);
-		width = make_width(prm);
-		if (width && !(prm->flags & F_MINUS))
-			string_to_buf(width);
+		width = prm->width - prm->len;
+		if (!(prm->flags & F_MINUS) && width > 0)
+			char_to_buf((prm->flags & F_ZERO ? '0' : ' '), width);
 		while (prm->len > 0)
 		{
 			prm->len -= unicode(*s);
 			++s;
 		}
-		if (width && prm->flags & F_MINUS)
-			string_to_buf(width);
-		if (width)
-			free(width);
+		if ((prm->flags & F_MINUS) && width > 0)
+			char_to_buf((prm->flags & F_ZERO ? '0' : ' '), width);
 	}
 }
 

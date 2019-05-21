@@ -6,7 +6,7 @@
 /*   By: smorty <smorty@student.21school.ru>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/02 14:08:11 by smorty            #+#    #+#             */
-/*   Updated: 2019/05/20 21:34:40 by smorty           ###   ########.fr       */
+/*   Updated: 2019/05/21 18:05:21 by smorty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,13 +86,13 @@ void			process_feg(va_list *argp, t_frmt *prm);
 void			process_f(long double n, t_frmt *prm);
 void			process_e(long double n, t_frmt *prm);
 int				unicode(wchar_t c);
-void			fracttoa(char *s, double n, int precision);
+void			fracttoa(char *s, long double n, int precision);
 int				prefix_fe(char *s, long double n, int flags);
 long double		round_f(long double n, int precision);
 int				get_exponent(long double *n);
 void			trim_zeros(char *s, int *precision);
 void			print_buf(void);
-void			char_to_buf(char c);
+void			char_to_buf(char c, int n);
 void			string_to_buf(char *s);
 char			*make_width(t_frmt *prm);
 void			to_print(char *out, char *width, t_frmt *prm);
