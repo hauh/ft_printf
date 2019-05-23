@@ -6,7 +6,7 @@
 /*   By: smorty <smorty@student.21school.ru>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/02 14:08:11 by smorty            #+#    #+#             */
-/*   Updated: 2019/05/21 18:05:21 by smorty           ###   ########.fr       */
+/*   Updated: 2019/05/23 18:02:29 by smorty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,6 +69,19 @@ typedef struct	s_frmt
 	int					width;
 	int					spec;
 }				t_frmt;
+
+typedef struct	s_ld
+{
+	unsigned long long	mantissa: 64;
+	int					exponent: 15;
+	int					sign: 1;
+}				t_ld;
+
+typedef union	u_bits
+{
+	long double			l;
+	short				lsh[5];
+}				t_bits;
 
 int				ft_printf(const char *format, ...);
 void			check_color_and_fd(const char **format);
