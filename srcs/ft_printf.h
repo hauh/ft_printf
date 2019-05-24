@@ -6,7 +6,7 @@
 /*   By: smorty <smorty@student.21school.ru>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/02 14:08:11 by smorty            #+#    #+#             */
-/*   Updated: 2019/05/23 18:02:29 by smorty           ###   ########.fr       */
+/*   Updated: 2019/05/24 21:00:31 by smorty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,6 +37,7 @@
 
 # define MAX(a, b) (a > b ? a : b)
 # define MIN(a, b) (a < b ? a : b)
+# define ABS(x) (x < 0 ? ~x + 1 : x)
 # define CHECK_BUFF(x) (g_len + x > BUFF_SIZE ? print_buf() : 0)
 
 # define COLOR_RED     "\x1b[31m"
@@ -70,18 +71,20 @@ typedef struct	s_frmt
 	int					spec;
 }				t_frmt;
 
-typedef struct	s_ld
-{
-	unsigned long long	mantissa: 64;
-	int					exponent: 15;
-	int					sign: 1;
-}				t_ld;
-
 typedef union	u_bits
 {
 	long double			l;
 	short				lsh[5];
 }				t_bits;
+
+typedef struct	s_ld
+{
+	uint64_t			mantissa: 64;
+	int					exponent: 15;
+	int					sign: 1;
+}				t_ld;
+
+
 
 int				ft_printf(const char *format, ...);
 void			check_color_and_fd(const char **format);
@@ -96,14 +99,8 @@ void			process_c(const wchar_t c, t_frmt *prm);
 void			process_s(const char *s, t_frmt *prm);
 void			process_cs(va_list *argp, t_frmt *prm);
 void			process_feg(va_list *argp, t_frmt *prm);
-void			process_f(long double n, t_frmt *prm);
-void			process_e(long double n, t_frmt *prm);
 int				unicode(wchar_t c);
-void			fracttoa(char *s, long double n, int precision);
-int				prefix_fe(char *s, long double n, int flags);
 long double		round_f(long double n, int precision);
-int				get_exponent(long double *n);
-void			trim_zeros(char *s, int *precision);
 void			print_buf(void);
 void			char_to_buf(char c, int n);
 void			string_to_buf(char *s);

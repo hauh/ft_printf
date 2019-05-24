@@ -6,7 +6,7 @@
 /*   By: smorty <smorty@student.21school.ru>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/15 13:27:56 by smorty            #+#    #+#             */
-/*   Updated: 2019/05/21 18:04:41 by smorty           ###   ########.fr       */
+/*   Updated: 2019/05/24 22:03:16 by smorty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,6 +80,7 @@ static void	process_x_mod(uintmax_t n, t_frmt *prm)
 	width = make_width(prm);
 	prefix_x((width && (prm->flags & F_ZERO) ? width : out), !n, prm);
 	to_print(out, width, prm);
+	free(out);
 }
 
 void		process_x(va_list *argp, t_frmt *params)

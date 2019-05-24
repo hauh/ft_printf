@@ -6,7 +6,7 @@
 /*   By: smorty <smorty@student.21school.ru>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/09 17:25:04 by smorty            #+#    #+#             */
-/*   Updated: 2019/05/21 18:09:02 by smorty           ###   ########.fr       */
+/*   Updated: 2019/05/24 22:03:05 by smorty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,11 +74,7 @@ void	to_print(char *out, char *width, t_frmt *prm)
 		string_to_buf(width);
 		free(width);
 	}
-	if (out)
-	{
-		string_to_buf(out);
-		free(out);
-	}
+	string_to_buf(out);
 	if ((prm->flags & F_MINUS) && width)
 	{
 		string_to_buf(width);

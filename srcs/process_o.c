@@ -6,7 +6,7 @@
 /*   By: smorty <smorty@student.21school.ru>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/06 16:58:45 by smorty            #+#    #+#             */
-/*   Updated: 2019/05/21 18:04:51 by smorty           ###   ########.fr       */
+/*   Updated: 2019/05/24 22:03:35 by smorty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,6 +60,7 @@ static void	process_o_mod(uintmax_t n, t_frmt *prm)
 		otoa(out + prm->len - 1, n);
 	*(out + prm->len) = 0;
 	to_print(out, make_width(prm), prm);
+	free(out);
 }
 
 void		process_o(va_list *argp, t_frmt *params)

@@ -6,7 +6,7 @@
 /*   By: smorty <smorty@student.21school.ru>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/06 15:57:07 by smorty            #+#    #+#             */
-/*   Updated: 2019/05/21 18:04:54 by smorty           ###   ########.fr       */
+/*   Updated: 2019/05/24 22:03:22 by smorty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,6 +60,7 @@ static void	process_u_mod(uintmax_t n, t_frmt *prm)
 		utoa(out + prm->len, n);
 	*(out + prm->len) = 0;
 	to_print(out, make_width(prm), prm);
+	free(out);
 }
 
 void		process_u(va_list *argp, t_frmt *params)
