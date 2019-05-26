@@ -6,7 +6,7 @@
 /*   By: smorty <smorty@student.21school.ru>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/02 14:08:11 by smorty            #+#    #+#             */
-/*   Updated: 2019/05/24 21:00:31 by smorty           ###   ########.fr       */
+/*   Updated: 2019/05/26 19:38:05 by smorty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@
 
 # define S_INT(c) (c == 'i' || c == 'd' || c == 'D' || c == 'u' || c == 'U')
 # define S_BAS(c) (c == 'o' || c == 'O' || c == 'x' || c == 'X' || c == 'b' || c == 'B')
-# define S_REA(c) (c == 'f' || c == 'F' || c == 'e' || c == 'E' || c == 'g' || c == 'G')
+# define S_REA(c) (c == 'f' || c == 'F' || c == 'e' || c == 'E' || c == 'g' || c == 'G' || c == 'a' || c == 'A')
 # define S_CHA(c) (c == 'c'	|| c == 'C' || c == 's' || c == 'S')
 # define S_MSC(c) (c == 'p' || c == 'n')
 # define SPEC(c) (S_INT(c) || S_BAS(c) || S_REA(c) || S_CHA(c) || S_MSC(c))
@@ -37,7 +37,7 @@
 
 # define MAX(a, b) (a > b ? a : b)
 # define MIN(a, b) (a < b ? a : b)
-# define ABS(x) (x < 0 ? ~x + 1 : x)
+# define ABS(x) (x < 0 ? -x : x)
 # define CHECK_BUFF(x) (g_len + x > BUFF_SIZE ? print_buf() : 0)
 
 # define COLOR_RED     "\x1b[31m"
@@ -99,6 +99,7 @@ void			process_c(const wchar_t c, t_frmt *prm);
 void			process_s(const char *s, t_frmt *prm);
 void			process_cs(va_list *argp, t_frmt *prm);
 void			process_feg(va_list *argp, t_frmt *prm);
+void			process_a(va_list *argp, t_frmt *prm);
 int				unicode(wchar_t c);
 long double		round_f(long double n, int precision);
 void			print_buf(void);

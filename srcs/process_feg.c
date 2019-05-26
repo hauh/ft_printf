@@ -6,7 +6,7 @@
 /*   By: smorty <smorty@student.21school.ru>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/12 18:18:09 by smorty            #+#    #+#             */
-/*   Updated: 2019/05/24 22:34:59 by smorty           ###   ########.fr       */
+/*   Updated: 2019/05/26 19:29:44 by smorty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -131,8 +131,18 @@ static int			nan_or_inf(t_ld *nb, t_frmt *prm)
 void round_float(char *out, char *dot, char *end)
 {
 	int dif;
+	char *p;
 
-	if (*(end + 1) > '5' || ((*(end + 1) == '5') && (*end % 2)))
+	dif = 0;
+	if (*(end + 1) == '5' && !(*end % 2))
+	{
+		p = end + 2;
+		while (*p == '0')
+			++p;
+		if (*p)
+			dif = 1;
+	}
+	if (*(end + 1) > '5' || dif)
 	{
 		dif = 1;
 		while (dif && end > dot)
@@ -241,7 +251,7 @@ void *ftoa(t_ld *nb, t_frmt *prm)
 
 	exponent = nb->exponent;
 	size = MAX(65, ABS(exponent)) + prm->precision + 7;
-	out = (char *)malloc(sizeof(char) * size);
+	out = (char *)malloc(sizeof(char) * size * 2);
 	out_end = out + size;
 	ft_bzero(out, size);
 	dot = out + (exponent > 0 ? exponent : 2);
@@ -256,7 +266,7 @@ void *ftoa(t_ld *nb, t_frmt *prm)
 	}
 	while (out_end >= out)
 		*out_end-- += '0';
-	*dot -= '0';
+	*dot = '.';
 	return(out);
 }
 
@@ -270,25 +280,24 @@ void process_feg_mod(long double n, t_frmt *prm)
 	int		spec;
 	int		e;
 
+	spec = prm->spec;
 	nb_union.l = n;
 	nb.exponent = nb_union.lsh[4] - 16383;
 	nb.mantissa = *(uint64_t *)&nb_union.l;
 	nb.sign = nb_union.lsh[4] >> 15;
 	if (nan_or_inf(&nb, prm))
 		return ;
-	spec = prm->spec;
 	out0 = ftoa(&nb, prm);
 	out = out0;
 	while (*out == '0')
 		++out;
-	e = get_exponenet(out);
 	if (spec == 'g' || spec == 'G')
 	{
 		if (e < prm->precision && e >= -4)
 			prm->precision -= e;
 		else
 			--spec;
-		if (prm->precision > 0)
+		if (prm->precision)
 			--prm->precision;
 		--spec;
 	}
@@ -298,7 +307,10 @@ void process_feg_mod(long double n, t_frmt *prm)
 	while (*dot != '.')
 		++dot;
 	round_float(out0, dot, dot + prm->precision);
-	*(dot + 1 + prm->precision) = 0;
+	if (!prm->precision)
+		*dot = 0;
+	else
+		*(dot + 1 + prm->precision) = 0;
 	if ((prm->spec == 'g' || prm->spec == 'G') && !(prm->flags & F_HASH))
 		trim_zeros(dot + prm->precision);
 	while (*dot)
@@ -320,7 +332,7 @@ void				process_feg(va_list *argp, t_frmt *prm)
 {
 	if (!(prm->flags & F_PREC))
 		prm->precision = 6;
-	else if (prm->precision > 1)
+	else if (prm->precision)
 		--prm->precision;
 	if ((prm->flags & (F_ZERO | F_MINUS)) == (F_ZERO | F_MINUS))
 		prm->flags ^= F_ZERO;
