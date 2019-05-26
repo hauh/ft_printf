@@ -6,7 +6,7 @@
 /*   By: smorty <smorty@student.21school.ru>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/04 17:02:25 by smorty            #+#    #+#             */
-/*   Updated: 2019/05/20 21:33:38 by smorty           ###   ########.fr       */
+/*   Updated: 2019/05/26 18:29:46 by smorty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,8 @@ void		process_format(va_list *argp, t_frmt *prm)
 		process_o(argp, prm);
 	else if (prm->spec == 'x' || prm->spec == 'X' || prm->spec == 'p')
 		process_x(argp, prm);
+	else if (prm->spec == 'a' || prm->spec == 'a')
+		process_a(argp, prm);
 	else if (prm->spec == 'b' || prm->spec == 'B')
 		process_b(argp, prm);
 	else if (S_CHA(prm->spec))
