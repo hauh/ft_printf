@@ -1,4 +1,4 @@
-#include "srcs/ft_printf.h"
+#include "ft_printf.h"
 #include <stdio.h>
 #include <wchar.h>
 #include <math.h>
@@ -9,11 +9,14 @@ int main()
 	long double i = INFINITY;
 	long double z = 0.;
 
-//	ft_printf(">%-+#100.40Lg<\n", 11.0L);
-//	printf(">%-+#100.40Lg<\n", 11.0L);
-//	ft_printf(">%-+#100.5000Lf<\n", 1);
-//	ft_printf(">%A<\n", 3.2);
-//	printf(">%L.1000F<\n", 7.16L - 7.0L);
-	ft_printf("%+.2La\n", -0.0L);
-	printf("%+.2La\n", -0.0L);
+	double l1 = 8008.2;
+	double l2 = 7777.477;
+	double ll1 = 1703.0541684;
+	double ll2 = 1.01;
+	double c1 = 42.42;
+	double c2 = 54321.12345;
+
+		ft_printf("%- 15.5hha\n", c1);
+		printf("%- 15.5hha\n", c1);
+
 }

@@ -6,13 +6,13 @@
 /*   By: smorty <smorty@student.21school.ru>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/12 18:18:09 by smorty            #+#    #+#             */
-/*   Updated: 2019/05/26 19:29:44 by smorty           ###   ########.fr       */
+/*   Updated: 2019/05/27 15:50:38 by smorty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_printf.h"
 
-int		get_exponenet(char *out)
+int		get_exponent(char *out)
 {
 	int e;
 
@@ -291,6 +291,7 @@ void process_feg_mod(long double n, t_frmt *prm)
 	out = out0;
 	while (*out == '0')
 		++out;
+	e = get_exponent(out);
 	if (spec == 'g' || spec == 'G')
 	{
 		if (e < prm->precision && e >= -4)

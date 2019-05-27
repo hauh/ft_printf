@@ -6,7 +6,7 @@
 #    By: smorty <smorty@student.21school.ru>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2019/05/04 18:16:10 by smorty            #+#    #+#              #
-#    Updated: 2019/05/26 22:49:31 by smorty           ###   ########.fr        #
+#    Updated: 2019/05/27 16:03:38 by smorty           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -33,7 +33,7 @@ $(NAME): $(OBJ)
 	ranlib $@
 
 $(SRCDIR)/%.o: $(SRCDIR)/%.c
-	$(CC) $(CFLAGS) -c -o $@ $<
+	$(CC) -I./includes $(CFLAGS) -c -o $@ $<
 
 clean:
 	@rm -f $(OBJ)

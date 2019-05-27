@@ -6,7 +6,7 @@
 /*   By: smorty <smorty@student.21school.ru>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/03 19:49:39 by smorty            #+#    #+#             */
-/*   Updated: 2019/05/21 15:12:02 by smorty           ###   ########.fr       */
+/*   Updated: 2019/05/27 18:25:12 by smorty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -111,14 +111,14 @@ void		process_cs(va_list *argp, t_frmt *prm)
 {
 	if (prm->spec == 'c' || prm->spec == 'C')
 	{
-		if (prm->mod == L || prm->mod == LL || prm->spec == 'C')
+		if (prm->mod == L || prm->spec == 'C')
 			process_c((const wchar_t)va_arg(*argp, int), prm);
 		else
 			process_c((const char)va_arg(*argp, int), prm);
 	}
 	else
 	{
-		if (prm->mod == L || prm->mod == LL || prm->spec == 'S')
+		if (prm->mod == L || prm->spec == 'S')
 			process_ls(va_arg(*argp, const wchar_t *), prm);
 		else
 			process_s(va_arg(*argp, const char *), prm);
