@@ -6,7 +6,7 @@
 /*   By: smorty <smorty@student.21school.ru>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/04 16:27:53 by smorty            #+#    #+#             */
-/*   Updated: 2019/05/27 17:58:37 by smorty           ###   ########.fr       */
+/*   Updated: 2019/05/28 23:47:36 by smorty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,8 +39,8 @@ static int	prefix_d(char *out, int sign, int flags)
 	else if (flags & F_SPACE)
 		*out = ' ';
 	else
-		return (0);
-	return (1);
+		return (-1);
+	return (0);
 }
 
 static void	process_d_mod(intmax_t n, t_frmt *prm)
@@ -53,16 +53,14 @@ static void	process_d_mod(intmax_t n, t_frmt *prm)
 	precision = prm->precision - (prm->flags & F_PREC);
 	size = MAX(precision, 20) + 1;
 	out = (char *)malloc(sizeof(char) * (size + 1));
-	ft_memset(out, '0', size);
 	out0 = out;
 	out += size;
 	*out-- = 0;
 	if (n)
 		dtoa(&out, n, &precision);
 	while (precision-- > 0)
-		--out;
-	if (!(prefix_d(out, (n < 0), prm->flags)))
-		++out;
+		*out-- = '0';
+	out -= prefix_d(out, (n < 0), prm->flags);
 	prm->len = ft_strlen(out);
 	to_print(out, make_width(prm), prm);
 	free(out0);
@@ -72,7 +70,7 @@ void		process_d(va_list *argp, t_frmt *prm)
 {
 	if (prm->flags & F_ZERO)
 	{
-	 	if (prm->flags & (F_MINUS | F_PREC))
+		if (prm->flags & (F_MINUS | F_PREC))
 			prm->flags ^= F_ZERO;
 		else if (prm->width > prm->precision)
 		{

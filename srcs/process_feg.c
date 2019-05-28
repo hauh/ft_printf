@@ -6,7 +6,7 @@
 /*   By: smorty <smorty@student.21school.ru>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/12 18:18:09 by smorty            #+#    #+#             */
-/*   Updated: 2019/05/27 15:50:38 by smorty           ###   ########.fr       */
+/*   Updated: 2019/05/28 15:56:26 by smorty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -104,30 +104,6 @@ void pwr2neg(char *dot, int pwr)
 	comb(dot - (p_end - &power[0]), dot);
 }
 
-static int			nan_or_inf(t_ld *nb, t_frmt *prm)
-{
-	if (nb->exponent == -0x4000)
-	{
-		if (prm->flags & F_PREC)
-			(prm->flags ^= F_PREC);
-		if (!(nb->mantissa << 1))
-		{
-			if (nb->sign)
-				process_s((prm->spec > 100 ? "-inf" : "-INF"), prm);
-			else if (prm->flags & F_PLUS)
-				process_s((prm->spec > 100 ? "+inf" : "+INF"), prm);
-			else if (prm->flags & F_SPACE)
-				process_s((prm->spec > 100 ? " inf" : " INF"), prm);
-			else
-				process_s((prm->spec > 100 ? "inf" : "INF"), prm);
-		}
-		else
-			process_s((prm->spec > 100 ? "nan" : "NAN"), prm);
-		return (1);
-	}
-	return (0);
-}
-
 void round_float(char *out, char *dot, char *end)
 {
 	int dif;
@@ -179,29 +155,6 @@ int prefix_feg(char *out, int sign, int flags)
 		return (1);
 	}
 	return (0);
-}
-
-static void	suffix_e(char *s, int exponent, char spec)
-{
-	*s++ = spec;
-	*s++ = (exponent < 0 ? '-' : '+');
-	if (exponent < 0)
-		exponent = ~exponent + 1;
-	if (exponent >= 1000)
-	{
-		*s++ = exponent / 1000 + '0';
-		exponent %= 1000;
-		*s++ = exponent / 100 + '0';
-		exponent %= 100;
-	}
-	else if (exponent >= 100)
-	{
-		*s++ = exponent / 100 + '0';
-		exponent %= 100;
-	}
-	*s++ = exponent / 10 + '0';
-	*s++ = exponent % 10 + '0';
-	*s = 0;
 }
 
 void shift_dot(char *out, int precision)
@@ -270,10 +223,8 @@ void *ftoa(t_ld *nb, t_frmt *prm)
 	return(out);
 }
 
-void process_feg_mod(long double n, t_frmt *prm)
+void process_feg(t_ld *nb, t_frmt *prm)
 {
-	t_bits	nb_union;
-	t_ld	nb;
 	char	*out0;
 	char	*out;
 	char	*dot;
@@ -281,13 +232,8 @@ void process_feg_mod(long double n, t_frmt *prm)
 	int		e;
 
 	spec = prm->spec;
-	nb_union.l = n;
-	nb.exponent = nb_union.lsh[4] - 16383;
-	nb.mantissa = *(uint64_t *)&nb_union.l;
-	nb.sign = nb_union.lsh[4] >> 15;
-	if (nan_or_inf(&nb, prm))
-		return ;
-	out0 = ftoa(&nb, prm);
+
+	out0 = ftoa(nb, prm);
 	out = out0;
 	while (*out == '0')
 		++out;
@@ -317,28 +263,14 @@ void process_feg_mod(long double n, t_frmt *prm)
 	while (*dot)
 		++dot;
 	if (spec == 'e' || spec == 'E')
-		suffix_e(dot, e, spec);
+		suffix_float(dot, e, spec);
 	out = out0;
 	while (*out == '0')
 		++out;
 	if (*out == '.' || !*out)
 		--out;
-	out -= prefix_feg(out - 1, nb.sign, prm->flags);
+	out -= prefix_feg(out - 1, nb->sign, prm->flags);
 	prm->len = ft_strlen(out);
 	to_print(out, make_width(prm), prm);
 	free(out0);
-}
-
-void				process_feg(va_list *argp, t_frmt *prm)
-{
-	if (!(prm->flags & F_PREC))
-		prm->precision = 6;
-	else if (prm->precision)
-		--prm->precision;
-	if ((prm->flags & (F_ZERO | F_MINUS)) == (F_ZERO | F_MINUS))
-		prm->flags ^= F_ZERO;
-	if (prm->flags & F_LONGD)
-		process_feg_mod(va_arg(*argp, long double), prm);
-	else
-		process_feg_mod(va_arg(*argp, double), prm);
 }
