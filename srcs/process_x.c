@@ -6,102 +6,94 @@
 /*   By: smorty <smorty@student.21school.ru>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/15 13:27:56 by smorty            #+#    #+#             */
-/*   Updated: 2019/05/24 22:03:16 by smorty           ###   ########.fr       */
+/*   Updated: 2019/05/28 23:50:48 by smorty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_printf.h"
 
-static int	num_len_x(uintmax_t n)
+static void	xtoa(char **s, uintmax_t n, int *precision, int spec)
 {
-	uintmax_t	d;
-	int			size;
-
-	size = 1;
-	n /= 16;
-	d = 1;
-	while (d <= n)
-	{
-		d *= 16;
-		size++;
-	}
-	return (size);
-}
-
-static void	xtoa(char *s, uintmax_t n, int spec)
-{
-	spec = (spec == 'x' || spec == 'p' ? 87 : 55);
+	spec = (spec > 'a' ? 87 : 55);
 	while (n)
 	{
-		*s = n % 16;
-		*s += (*s > 9 ? spec : '0');
+		**s = n % 16;
+		**s += (**s > 9 ? spec : '0');
 		n /= 16;
-		s--;
+		--(*s);
+		--(*precision);
 	}
 }
 
-static void	prefix_x(char *s, int n_is_zero, t_frmt *prm)
+static int	prefix_x(char *s, int n_is_zero, t_frmt *prm)
 {
 	if (prm->spec == 'p')
 	{
+		*s-- = 'x';
 		*s = '0';
-		*(s + 1) = 'x';
 	}
 	else if (!n_is_zero && prm->flags & F_HASH)
 	{
+		*s-- = prm->spec;
 		*s = '0';
-		*(s + 1) = prm->spec;
 	}
+	else
+		return (-1);
+	return (1);
 }
 
 static void	process_x_mod(uintmax_t n, t_frmt *prm)
 {
 	char	*out;
-	char	*width;
-	int		prec;
+	char	*out0;
+	int		size;
+	int		precision;
 
-	if (prm->flags & F_ZERO && prm->flags & (F_MINUS | F_PREC))
-		prm->flags ^= F_ZERO;
-	prec = prm->precision - (prm->flags & F_PREC);
-	prm->len = MAX(num_len_x(n), prec);
-	if ((n && prm->flags & F_HASH) || prm->spec == 'p')
-		prm->len += 2;
-	if (!(out = (char *)malloc(sizeof(char) * (prm->len + 1))))
-	{
-		g_error = -1;
-		return ;
-	}
-	ft_memset(out, '0', prm->len);
-	if (!n && !prec)
-		prm->len = (prm->spec == 'p' ? 2 : 0);
-	else
-		xtoa(out + prm->len - 1, n, prm->spec);
-	*(out + prm->len) = 0;
-	width = make_width(prm);
-	prefix_x((width && (prm->flags & F_ZERO) ? width : out), !n, prm);
-	to_print(out, width, prm);
-	free(out);
+	precision = prm->precision - (prm->flags & F_PREC);
+	size = MAX(precision, 20) + 3;
+	out = (char *)malloc(sizeof(char) * (size + 1));
+	out0 = out;
+	out += size;
+	*out-- = 0;
+	if (n)
+		xtoa(&out, n, &precision, prm->spec);
+	while (precision-- > 0)
+		*out-- = '0';
+	out -= prefix_x(out, (!n), prm);
+	prm->len = ft_strlen(out);
+	to_print(out, make_width(prm), prm);
+	free(out0);
 }
 
-void		process_x(va_list *argp, t_frmt *params)
+void		process_x(va_list *argp, t_frmt *prm)
 {
-	if ((*params).spec == 'p')
+	if (prm->flags & F_ZERO)
 	{
-		(*params).flags |= F_HASH;
-		process_x_mod(va_arg(*argp, intptr_t), params);
+		if (prm->flags & (F_MINUS | F_PREC))
+			prm->flags ^= F_ZERO;
+		else if (prm->width > prm->precision)
+		{
+			prm->flags |= F_PREC;
+			prm->precision = prm->width - 1;
+		}
 	}
-	else if ((*params).mod == HH)
-		process_x_mod((unsigned char)va_arg(*argp, unsigned int), params);
-	else if ((*params).mod == H)
-		process_x_mod((unsigned short)va_arg(*argp, unsigned int), params);
-	else if ((*params).mod == NO)
-		process_x_mod(va_arg(*argp, unsigned int), params);
-	else if ((*params).mod == L)
-		process_x_mod(va_arg(*argp, unsigned long), params);
-	else if ((*params).mod == LL)
-		process_x_mod(va_arg(*argp, unsigned long long), params);
-	else if ((*params).mod == Z)
-		process_x_mod(va_arg(*argp, size_t), params);
-	else if ((*params).mod == J)
-		process_x_mod(va_arg(*argp, uintmax_t), params);
+	if (prm->spec == 'p')
+	{
+		prm->flags |= F_HASH;
+		process_x_mod(va_arg(*argp, intptr_t), prm);
+	}
+	else if (prm->mod == HH)
+		process_x_mod((unsigned char)va_arg(*argp, unsigned int), prm);
+	else if (prm->mod == H)
+		process_x_mod((unsigned short)va_arg(*argp, unsigned int), prm);
+	else if (prm->mod == NO)
+		process_x_mod(va_arg(*argp, unsigned int), prm);
+	else if (prm->mod == L)
+		process_x_mod(va_arg(*argp, unsigned long), prm);
+	else if (prm->mod == LL)
+		process_x_mod(va_arg(*argp, unsigned long long), prm);
+	else if (prm->mod == Z)
+		process_x_mod(va_arg(*argp, size_t), prm);
+	else if (prm->mod == J)
+		process_x_mod(va_arg(*argp, uintmax_t), prm);
 }

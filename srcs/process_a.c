@@ -6,7 +6,7 @@
 /*   By: smorty <smorty@student.21school.ru>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/26 18:29:52 by smorty            #+#    #+#             */
-/*   Updated: 2019/05/27 23:32:55 by smorty           ###   ########.fr       */
+/*   Updated: 2019/05/28 22:14:42 by smorty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,21 +15,20 @@
 static int	get_exponent(long double *n, int flag_ld)
 {
 	int p;
-	int min;
-	int max;
+	int m;
 
 	p = 0;
-	min = (flag_ld ? 8 : 1);
-	max = (flag_ld ? 15 : 2);
 	if (*n < 0)
 		*n *= -1;
-	while (*n >= max)
+	m = (flag_ld ? 16 : 2);
+	while (*n >= m)
 	{
 		*n /= 2;
 		++p;
 	}
+	m = (flag_ld ? 8 : 1);
 	if (*n)
-		while (*n < min)
+		while (*n < m)
 		{
 			*n *= 2;
 			--p;
@@ -37,40 +36,7 @@ static int	get_exponent(long double *n, int flag_ld)
 	return (p);
 }
 
-static int round_a(char *s, int spec)
-{
-	int dif;
-
-	if (*s >= spec || *s == '9' || (*s == '8' && !(*(s - 1) % 2)))
-	{
-		--s;
-		dif = 1;
-		while (dif && *s != '.')
-		{
-			if (*s == '9')
-				*s = spec;
-			else
-				++(*s);			
-			(*s == spec + 6) ? (*s = '0') : (dif = 0);
-			--s;
-		}
-		if (dif && (*(s + 1) != '8' || !(*(s - 1) % 2)))
-		{
-			--s;
-			++(*s);
-			if (*s == '9' + 1)
-				*s = spec;
-			else if (*s == spec + 6)
-			{
-				*s = '1';
-				return (4);
-			}
-		}
-	}
-	return (0);	
-}
-
-static int prefix_a(char *out, int sign, t_frmt *prm)
+static int	prefix_a(char *out, int sign, t_frmt *prm)
 {
 	char *out0;
 
@@ -86,80 +52,72 @@ static int prefix_a(char *out, int sign, t_frmt *prm)
 	return (out - out0);
 }
 
-static void suffix_a(char *out, int p, int spec)
+static int	round_a(char *s, int spec)
 {
-	int tmp;
+	int dif;
 
-	*out++ = spec + 15;
-	*out++ = (p < 0 ? '-' : '+');
-	if (!p)
-		*out++ = '0';
-	else
+	dif = 1;
+	while (*--s != '.' && dif)
 	{
-		if (p < 0)
-			p = ~p + 1;
-		tmp = 1;
-		while (p)
+		*s += (*s == '9' ? spec - '9' : 1);
+		if (*s == spec + 6)
+			*s = '0';
+		else
+			dif = 0;
+	}
+	if (dif)
+	{
+		--s;
+		*s += (*s == '9' ? spec - '9' : 1);
+		if (*s == spec + 6)
 		{
-			tmp = tmp * 10 + p % 10;
-			p /= 10;
-		}
-		while (tmp != 1)
-		{
-			*out++ = tmp % 10 + '0';
-			tmp /= 10;
+			*s = '1';
+			return (4);
 		}
 	}
-	*out = 0;
+	return (0);
 }
 
-static void		floattohex(char *out, long double n, t_frmt *prm)
+static void	floattohex(char *out, long double n, t_frmt *prm)
 {
 	int p;
-	char *dot;
 
 	p = get_exponent(&n, prm->flags & F_LONGD);
 	*out++ = (int)n + ((int)n > 9 ? prm->spec - 10 : '0');
 	n -= (int)n;
-	if (n || prm->precision || prm->flags & F_HASH)
+	*out++ = '.';
+	while (n && (prm->flags & F_PREC ? prm->precision : 1))
 	{
-		*out++ = '.';
-		dot = out;
-		while (n)
-		{
-			n *= 16;
-			*out = (int)n + ((int)n > 9 ? prm->spec - 10 : '0');
-			n -= (int)n;
-			++out;
-		}
-		if (prm->flags & F_PREC)
-		{
-			p += round_a(dot + prm->precision, prm->spec);
-			out = dot + prm->precision;
-			if (!prm->precision && !(prm->flags & F_HASH))
-				out--;
-		}
+		n *= 16;
+		*out++ = (int)n + ((int)n > 9 ? prm->spec - 10 : '0');
+		n -= (int)n;
+		--prm->precision;
 	}
-	suffix_a(out, p, prm->spec);
+	if (prm->flags & F_PREC)
+	{
+		n *= 16;
+		if (prm->precision)
+			out += prm->precision;
+		else if ((int)n > 8 || ((int)n == 8 && ((int)(n * 16) % 2)))
+			p += round_a(out, prm->spec);
+	}
+	if (*(out - 1) == '.' && !(prm->flags & F_HASH))
+		--out;
+	suffix_float(out, p, prm->spec);
 }
 
-void		process_a(va_list *argp, t_frmt *prm)
+void		process_a(long double n, int sign, t_frmt *prm)
 {
-	long double n;
 	char *out;
 	char *out0;
 	char *width;
 
-	if ((prm->flags & (F_ZERO | F_MINUS)) == (F_ZERO | F_MINUS))
-		prm->flags ^= F_ZERO;
-	--prm->precision;
-	n = (prm->flags & F_LONGD ? va_arg(*argp, long double) : va_arg(*argp, double));
 	out = (char *)malloc(sizeof(char) * (30 + prm->precision));
 	ft_memset(out, '0', 30 + prm->precision);
 	out0 = out;
-	out += prefix_a(out, (n < 0), prm);
+	out += prefix_a(out, sign, prm);
 	floattohex(out, n, prm);
-	if (prm->flags & F_ZERO && prm->width > 8)
+	if (prm->flags & F_ZERO && prm->width > 6)
 	{
 		prm->len = ft_strlen(out);
 		if (prm->width - prm->len < out - out0)
@@ -169,11 +127,7 @@ void		process_a(va_list *argp, t_frmt *prm)
 		prm->len = ft_strlen(out0);
 	width = make_width(prm);
 	if (width && prm->flags & F_ZERO)
-	{
-		prefix_a(width, (n < 0), prm);
-		to_print(out, width, prm);
-	}
-	else
-		to_print(out0, width, prm);
+		prefix_a(width, sign, prm);
+	to_print((width && prm->flags & F_ZERO ? out : out0), width, prm);
 	free(out0);
 }

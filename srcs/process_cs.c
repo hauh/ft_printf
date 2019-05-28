@@ -6,7 +6,7 @@
 /*   By: smorty <smorty@student.21school.ru>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/03 19:49:39 by smorty            #+#    #+#             */
-/*   Updated: 2019/05/27 18:25:12 by smorty           ###   ########.fr       */
+/*   Updated: 2019/05/28 22:33:56 by smorty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,8 +14,6 @@
 
 void		process_c(const wchar_t c, t_frmt *prm)
 {
-	if ((prm->flags & (F_ZERO | F_MINUS)) == (F_ZERO | F_MINUS))
-		prm->flags ^= F_ZERO;
 	if (c <= 0x7FF)
 		prm->len = (c <= 0x7F ? 1 : 2);
 	else
@@ -35,12 +33,10 @@ void		process_s(const char *s, t_frmt *prm)
 	int width;
 
 	if (!s)
-		s = (prm->precision - (prm->flags & F_PREC) ? "(null)" : "");
-	if ((prm->flags & (F_ZERO | F_MINUS)) == (F_ZERO | F_MINUS))
-		prm->flags ^= F_ZERO;
+		s = (!prm->precision && prm->flags & F_PREC ? "" : "(null)");
 	prm->len = ft_strlen(s);
 	if (prm->flags & F_PREC)
-		prm->len = MIN(prm->precision - (prm->flags & F_PREC), prm->len);
+		prm->len = MIN(prm->precision, prm->len);
 	width = prm->width - prm->len;
 	if (!(prm->flags & F_MINUS) && width > 0)
 		char_to_buf((prm->flags & F_ZERO ? '0' : ' '), width);
@@ -61,7 +57,6 @@ static int	strsize(const wchar_t *s, t_frmt *prm)
 
 	i = 0;
 	size = 0;
-	prm->precision -= prm->flags & F_PREC;
 	while (*s && (prm->flags & F_PREC ? prm->precision > 0 : 1))
 	{
 		if (*s <= 0x7FF)
@@ -91,8 +86,6 @@ static void	process_ls(const wchar_t *s, t_frmt *prm)
 		process_s(NULL, prm);
 	else
 	{
-		if ((prm->flags & (F_ZERO | F_MINUS)) == (F_ZERO | F_MINUS))
-			prm->flags ^= F_ZERO;
 		prm->len = strsize(s, prm);
 		width = prm->width - prm->len;
 		if (!(prm->flags & F_MINUS) && width > 0)
@@ -109,6 +102,9 @@ static void	process_ls(const wchar_t *s, t_frmt *prm)
 
 void		process_cs(va_list *argp, t_frmt *prm)
 {
+	if ((prm->flags & (F_ZERO | F_MINUS)) == (F_ZERO | F_MINUS))
+		prm->flags ^= F_ZERO;
+	--prm->precision;
 	if (prm->spec == 'c' || prm->spec == 'C')
 	{
 		if (prm->mod == L || prm->spec == 'C')
