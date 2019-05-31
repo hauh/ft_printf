@@ -3,20 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   ft_printf.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: smorty <smorty@student.21school.ru>        +#+  +:+       +#+        */
+/*   By: smorty <smorty@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/02 14:55:41 by smorty            #+#    #+#             */
-/*   Updated: 2019/05/21 14:57:31 by smorty           ###   ########.fr       */
+/*   Updated: 2019/05/31 23:06:02 by smorty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_printf.h"
 
-char	g_buf[BUFF_SIZE];
-int		g_len;
-int		g_printed;
-int		g_error;
-int		g_fd;
+t_output	g_ftprintf;
 
 static t_frmt	initialize_params(void)
 {
@@ -43,10 +39,11 @@ static void		parse_string(const char **format, va_list *argp)
 				++(*format);
 			}
 			else if (**format)
-				parse_params(format, argp, initialize_params());
+				if (parse_params(format, argp, initialize_params()) == -1)
+					return ;
 		}
 		else if (**format == '{')
-			check_color_and_fd(format);
+			check_color_and_fd(format, argp);
 		else
 		{
 			char_to_buf(**format, 1);
@@ -57,18 +54,19 @@ static void		parse_string(const char **format, va_list *argp)
 
 int				ft_printf(const char *format, ...)
 {
-	va_list argp;
+	va_list	argp;
 
-	g_printed = 0;
-	g_error = 0;
+	g_ftprintf.printed = 0;
+	if (g_ftprintf.error != -1)
+		g_ftprintf.error = 0;
 	if (format)
 	{
-		g_len = 0;
-		g_fd = 1;
+		g_ftprintf.len = 0;
+		g_ftprintf.fd = 1;
 		va_start(argp, format);
 		parse_string(&format, &argp);
-		va_end(argp);
 		print_buf();
+		va_end(argp);
 	}
-	return (g_error ? g_error : g_printed);
+	return (g_ftprintf.error ? -1 : g_ftprintf.printed);
 }

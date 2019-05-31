@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   process_d.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: smorty <smorty@student.21school.ru>        +#+  +:+       +#+        */
+/*   By: smorty <smorty@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/04 16:27:53 by smorty            #+#    #+#             */
-/*   Updated: 2019/05/28 23:47:36 by smorty           ###   ########.fr       */
+/*   Updated: 2019/05/31 23:20:57 by smorty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,53 +43,51 @@ static int	prefix_d(char *out, int sign, int flags)
 	return (0);
 }
 
-static void	process_d_mod(intmax_t n, t_frmt *prm)
+static int	process_d_mod(intmax_t n, t_frmt *prm)
 {
 	char	*out;
 	char	*out0;
+	char	*width;
 	int		size;
-	int		precision;
 
-	precision = prm->precision - (prm->flags & F_PREC);
-	size = MAX(precision, 20) + 1;
-	out = (char *)malloc(sizeof(char) * (size + 1));
+	size = MAX(prm->precision, 20) + 1;
+	if (!(out = (char *)malloc(sizeof(char) * (size + 1))))
+		return (g_ftprintf.error = -1);
 	out0 = out;
 	out += size;
 	*out-- = 0;
 	if (n)
-		dtoa(&out, n, &precision);
-	while (precision-- > 0)
+		dtoa(&out, n, &prm->precision);
+	while (prm->precision-- > 0)
 		*out-- = '0';
 	out -= prefix_d(out, (n < 0), prm->flags);
 	prm->len = ft_strlen(out);
-	to_print(out, make_width(prm), prm);
+	width = NULL;
+	if (prm->width > prm->len)
+		if (!(width = make_width(prm)))
+			return (g_ftprintf.error = -1);
+	to_print(out, width, prm);
 	free(out0);
+	return (0);
 }
 
-void		process_d(va_list *argp, t_frmt *prm)
+int			process_d(va_list *argp, t_frmt *prm)
 {
-	if (prm->flags & F_ZERO)
-	{
-		if (prm->flags & (F_MINUS | F_PREC))
-			prm->flags ^= F_ZERO;
-		else if (prm->width > prm->precision)
-		{
-			prm->flags |= F_PREC;
-			prm->precision = prm->width;
-		}
-	}
+	if (prm->flags & F_ZERO && prm->width > prm->precision)
+			prm->precision = prm->width - 1;
 	if (prm->mod == HH)
-		process_d_mod((char)va_arg(*argp, int), prm);
+		return (process_d_mod((char)va_arg(*argp, int), prm));
 	else if (prm->mod == H)
-		process_d_mod((short)va_arg(*argp, int), prm);
+		return (process_d_mod((short)va_arg(*argp, int), prm));
 	else if (prm->mod == NO)
-		process_d_mod(va_arg(*argp, int), prm);
+		return (process_d_mod(va_arg(*argp, int), prm));
 	else if (prm->mod == L)
-		process_d_mod(va_arg(*argp, long), prm);
+		return (process_d_mod(va_arg(*argp, long), prm));
 	else if (prm->mod == LL)
-		process_d_mod(va_arg(*argp, long long), prm);
+		return (process_d_mod(va_arg(*argp, long long), prm));
 	else if (prm->mod == Z)
-		process_d_mod(va_arg(*argp, ssize_t), prm);
+		return (process_d_mod(va_arg(*argp, ssize_t), prm));
 	else if (prm->mod == J)
-		process_d_mod(va_arg(*argp, intmax_t), prm);
+		return (process_d_mod(va_arg(*argp, intmax_t), prm));
+	return (-1);
 }

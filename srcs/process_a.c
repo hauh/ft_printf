@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   process_a.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: smorty <smorty@student.21school.ru>        +#+  +:+       +#+        */
+/*   By: smorty <smorty@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/26 18:29:52 by smorty            #+#    #+#             */
-/*   Updated: 2019/05/28 22:14:42 by smorty           ###   ########.fr       */
+/*   Updated: 2019/05/31 23:21:45 by smorty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -96,9 +96,9 @@ static void	floattohex(char *out, long double n, t_frmt *prm)
 	if (prm->flags & F_PREC)
 	{
 		n *= 16;
-		if (prm->precision)
-			out += prm->precision;
-		else if ((int)n > 8 || ((int)n == 8 && ((int)(n * 16) % 2)))
+		while (prm->precision--)
+			*out++ = '0';
+		if ((int)n > 8 || ((int)n == 8 && ((int)(n * 16) % 2)))
 			p += round_a(out, prm->spec);
 	}
 	if (*(out - 1) == '.' && !(prm->flags & F_HASH))
@@ -106,28 +106,27 @@ static void	floattohex(char *out, long double n, t_frmt *prm)
 	suffix_float(out, p, prm->spec);
 }
 
-void		process_a(long double n, int sign, t_frmt *prm)
+int			process_a(long double n, int sign, t_frmt *prm)
 {
 	char *out;
 	char *out0;
 	char *width;
 
-	out = (char *)malloc(sizeof(char) * (30 + prm->precision));
-	ft_memset(out, '0', 30 + prm->precision);
+	if (!(out = (char *)malloc(sizeof(char) * (30 + prm->precision))))
+		return (g_ftprintf.error = -1);
 	out0 = out;
 	out += prefix_a(out, sign, prm);
 	floattohex(out, n, prm);
-	if (prm->flags & F_ZERO && prm->width > 6)
-	{
+	prm->len = ft_strlen(out0);
+	if (prm->flags & F_ZERO && prm->width > prm->len)
 		prm->len = ft_strlen(out);
-		if (prm->width - prm->len < out - out0)
-			prm->width = 0;
-	}
-	else
-		prm->len = ft_strlen(out0);
-	width = make_width(prm);
+	width = NULL;
+	if (prm->width > prm->len)
+		if (!(width = make_width(prm)))
+			return (g_ftprintf.error = -1);
 	if (width && prm->flags & F_ZERO)
 		prefix_a(width, sign, prm);
 	to_print((width && prm->flags & F_ZERO ? out : out0), width, prm);
 	free(out0);
+	return (0);
 }

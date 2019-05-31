@@ -6,7 +6,7 @@
 /*   By: smorty <smorty@student.21school.ru>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/12 18:18:09 by smorty            #+#    #+#             */
-/*   Updated: 2019/05/28 15:56:26 by smorty           ###   ########.fr       */
+/*   Updated: 2019/05/29 20:43:02 by smorty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -223,7 +223,7 @@ void *ftoa(t_ld *nb, t_frmt *prm)
 	return(out);
 }
 
-void process_feg(t_ld *nb, t_frmt *prm)
+int process_feg(t_ld *nb, t_frmt *prm)
 {
 	char	*out0;
 	char	*out;
@@ -244,8 +244,6 @@ void process_feg(t_ld *nb, t_frmt *prm)
 			prm->precision -= e;
 		else
 			--spec;
-		if (prm->precision)
-			--prm->precision;
 		--spec;
 	}
 	if (spec == 'e' || spec == 'E')
@@ -273,4 +271,5 @@ void process_feg(t_ld *nb, t_frmt *prm)
 	prm->len = ft_strlen(out);
 	to_print(out, make_width(prm), prm);
 	free(out0);
+	return (0);
 }

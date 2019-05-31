@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_printf.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: smorty <smorty@student.21school.ru>        +#+  +:+       +#+        */
+/*   By: smorty <smorty@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/02 14:08:11 by smorty            #+#    #+#             */
-/*   Updated: 2019/05/28 22:34:14 by smorty           ###   ########.fr       */
+/*   Updated: 2019/05/31 20:19:32 by smorty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,7 @@
 # define MIN(a, b) (a < b ? a : b)
 # define ABS(x) (x < 0 ? -x : x)
 # define ODD(x, spec) ((x < spec && x % 2 == 1) || x == spec + 1 || x == spec + 3 || x == spec + 5)
-# define CHECK_BUFF(x) (g_len + x > BUFF_SIZE ? print_buf() : 0)
+# define CHECK_BUFF(x) (g_ftprintf.len + x > BUFF_SIZE ? print_buf() : 0)
 
 # define COLOR_RED     "\x1b[31m"
 # define COLOR_GREEN   "\x1b[32m"
@@ -51,16 +51,19 @@
 
 # define BUFF_SIZE 128
 
-extern char	g_buf[BUFF_SIZE];
-extern int	g_len;
-extern int	g_printed;
-extern int	g_error;
-extern int	g_fd;
-
 enum			e_modifiers
 {
 	NO, HH, H, L, LL, Z, J,
 };
+
+typedef struct	s_output
+{
+	char				buf[BUFF_SIZE];
+	int					len;
+	int					printed;
+	int					fd;
+	int					error;
+}				t_output;
 
 typedef struct	s_frmt
 {
@@ -85,29 +88,29 @@ typedef struct	s_ld
 	int					sign: 1;
 }				t_ld;
 
-
+extern t_output	g_ftprintf;
 
 int				ft_printf(const char *format, ...);
-void			check_color_and_fd(const char **format);
-void			parse_params(const char **format, va_list *argp, t_frmt prm);
-void			process_format(va_list *argp, t_frmt *prm);
-void			process_d(va_list *argp, t_frmt *prm);
-void			process_u(va_list *argp, t_frmt *prm);
-void			process_o(va_list *argp, t_frmt *prm);
-void			process_x(va_list *argp, t_frmt *prm);
-void			process_b(va_list *argp, t_frmt *prm);
-void			process_c(const wchar_t c, t_frmt *prm);
-void			process_s(const char *s, t_frmt *prm);
-void			process_cs(va_list *argp, t_frmt *prm);
-void			process_float(va_list *argp, t_frmt *prm);
-void			process_feg(t_ld *nb, t_frmt *prm);
-void			process_a(long double n, int sign, t_frmt *prm);
+void			check_color_and_fd(const char **format, va_list *argp);
+int				parse_params(const char **format, va_list *argp, t_frmt prm);
+int				process_format(va_list *argp, t_frmt *prm);
+int				process_d(va_list *argp, t_frmt *prm);
+int				process_u(va_list *argp, t_frmt *prm);
+int				process_o(va_list *argp, t_frmt *prm);
+int				process_x(va_list *argp, t_frmt *prm);
+int				process_b(va_list *argp, t_frmt *prm);
+int				process_c(const wchar_t c, t_frmt *prm);
+int				process_s(const char *s, t_frmt *prm);
+int				process_cs(va_list *argp, t_frmt *prm);
+int				process_float(va_list *argp, t_frmt *prm);
+int				process_feg(t_ld *nb, t_frmt *prm);
+int				process_a(long double n, int sign, t_frmt *prm);
 void			suffix_float(char *out, int e, int spec);
 int				unicode(wchar_t c);
 long double		round_f(long double n, int precision);
 void			print_buf(void);
 void			char_to_buf(char c, int n);
-void			string_to_buf(char *s);
+void			string_to_buf(const char *s, const char *end);
 char			*make_width(t_frmt *prm);
 void			to_print(char *out, char *width, t_frmt *prm);
 
