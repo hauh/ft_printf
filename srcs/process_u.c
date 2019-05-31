@@ -3,80 +3,70 @@
 /*                                                        :::      ::::::::   */
 /*   process_u.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: smorty <smorty@student.21school.ru>        +#+  +:+       +#+        */
+/*   By: smorty <smorty@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/06 15:57:07 by smorty            #+#    #+#             */
-/*   Updated: 2019/05/24 22:03:22 by smorty           ###   ########.fr       */
+/*   Updated: 2019/05/31 23:20:00 by smorty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_printf.h"
 
-static int	num_len_u(uintmax_t n)
-{
-	uintmax_t	d;
-	int			size;
-
-	size = 1;
-	n /= 10;
-	d = 1;
-	while (d <= n)
-	{
-		d *= 10;
-		size++;
-	}
-	return (size);
-}
-
-static void	utoa(char *s, uintmax_t n)
+static void	utoa(char **out, uintmax_t n, int *precision)
 {
 	while (n)
 	{
-		s--;
-		*s = n % 10 + '0';
+		**out = n % 10 + '0';
 		n /= 10;
+		--(*out);
+		--(*precision);
 	}
 }
 
-static void	process_u_mod(uintmax_t n, t_frmt *prm)
+static int	process_u_mod(uintmax_t n, t_frmt *prm)
 {
 	char	*out;
-	int		precision;
+	char	*out0;
+	char	*width;
+	int		size;
 
-	if (prm->flags & F_ZERO && prm->flags & (F_MINUS | F_PREC))
-		prm->flags ^= F_ZERO;
-	precision = prm->precision - (prm->flags & F_PREC);
-	prm->len = num_len_u(n);
-	prm->len = MAX(prm->len, precision);
-	if (!(out = (char *)malloc(sizeof(char) * (prm->len + 1))))
-	{
-		g_error = -1;
-		return ;
-	}
-	ft_memset(out, '0', prm->len);
-	if (!n && !precision)
-		prm->len = 0;
-	else
-		utoa(out + prm->len, n);
-	*(out + prm->len) = 0;
-	to_print(out, make_width(prm), prm);
-	free(out);
+	size = MAX(prm->precision, 20);
+	if (!(out = (char *)malloc(sizeof(char) * (size + 1))))
+		return (g_ftprintf.error = -1);
+	out0 = out;
+	out += size;
+	*out-- = 0;
+	if (n)
+		utoa(&out, n, &prm->precision);
+	while (prm->precision-- > 0)
+		*out-- = '0';
+	prm->len = ft_strlen(out + 1);
+	width = NULL;
+	if (prm->width > prm->len)
+		if (!(width = make_width(prm)))
+			return (g_ftprintf.error = -1);
+	to_print(out + 1, width, prm);
+	free(out0);
+	return (0);
 }
 
-void		process_u(va_list *argp, t_frmt *params)
+int			process_u(va_list *argp, t_frmt *prm)
 {
-	if ((*params).mod == HH)
-		process_u_mod((unsigned char)va_arg(*argp, unsigned int), params);
-	else if ((*params).mod == H)
-		process_u_mod((unsigned short)va_arg(*argp, unsigned int), params);
-	else if ((*params).mod == NO)
-		process_u_mod(va_arg(*argp, unsigned int), params);
-	else if ((*params).mod == L)
-		process_u_mod(va_arg(*argp, unsigned long), params);
-	else if ((*params).mod == LL)
-		process_u_mod(va_arg(*argp, unsigned long long), params);
-	else if ((*params).mod == Z)
-		process_u_mod(va_arg(*argp, size_t), params);
-	else if ((*params).mod == J)
-		process_u_mod(va_arg(*argp, uintmax_t), params);
+	if (prm->flags & F_ZERO && prm->width > prm->precision)
+		prm->precision = prm->width - 2;
+	if (prm->mod == HH)
+		return (process_u_mod((unsigned char)va_arg(*argp, int), prm));
+	else if (prm->mod == H)
+		return (process_u_mod((unsigned short)va_arg(*argp, int), prm));
+	else if (prm->mod == NO)
+		return (process_u_mod(va_arg(*argp, unsigned int), prm));
+	else if (prm->mod == L)
+		return (process_u_mod(va_arg(*argp, unsigned long), prm));
+	else if (prm->mod == LL)
+		return (process_u_mod(va_arg(*argp, unsigned long long), prm));
+	else if (prm->mod == Z)
+		return (process_u_mod(va_arg(*argp, size_t), prm));
+	else if (prm->mod == J)
+		return (process_u_mod(va_arg(*argp, uintmax_t), prm));
+	return (g_ftprintf.error = -1);
 }

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   colors.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: smorty <smorty@student.21school.ru>        +#+  +:+       +#+        */
+/*   By: smorty <smorty@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/19 17:37:46 by smorty            #+#    #+#             */
-/*   Updated: 2019/05/21 14:57:21 by smorty           ###   ########.fr       */
+/*   Updated: 2019/05/31 20:20:09 by smorty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,39 +17,14 @@ static int	set_color(char *color, int color_len)
 	if (BUFF_SIZE >= color_len)
 	{
 		CHECK_BUFF(color_len);
-		string_to_buf(color);
+		string_to_buf(color, color + color_len);
 		return (color_len);
 	}
-	return (0);
+	char_to_buf('{', 1);
+	return (1);
 }
 
-static void	set_fd(const char **format)
-{
-	int n;
-	int len;
-
-	n = 0;
-	len = 0;
-	(*format) += 3;
-	while (**format >= '0' && **format <= '9')
-	{
-		n = n * 10 + **format - '0';
-		++(*format);
-		++len;
-	}
-	if (**format == '}')
-	{
-		g_fd = n;
-		++(*format);
-	}
-	else
-	{
-		char_to_buf('{', 1);
-		*format -= len + 3;
-	}
-}
-
-void		check_color_and_fd(const char **format)
+void		check_color_and_fd(const char **format, va_list *argp)
 {
 	if (ft_strnequ(*format, "{red}", 5))
 		*format += set_color(COLOR_RED, 5);
@@ -65,10 +40,11 @@ void		check_color_and_fd(const char **format)
 		*format += set_color(COLOR_CYAN, 6);
 	else if (ft_strnequ(*format, "{eoc}", 5))
 		*format += set_color(COLOR_RESET, 5);
-	else if (ft_strnequ(*format, "{fd", 3))
+	else if (ft_strnequ(*format, "{*}", 3))
 	{
 		print_buf();
-		set_fd(format);
+		g_ftprintf.fd = va_arg(*argp, int);
+		*format += 3;
 	}
 	else
 	{

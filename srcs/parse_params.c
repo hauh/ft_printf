@@ -6,7 +6,7 @@
 /*   By: smorty <smorty@student.21school.ru>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/02 16:11:46 by smorty            #+#    #+#             */
-/*   Updated: 2019/05/20 21:21:48 by smorty           ###   ########.fr       */
+/*   Updated: 2019/05/31 18:04:29 by smorty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,14 +15,18 @@
 static void		get_flag(const char **format, int *flags)
 {
 	if (**format == '-')
+	{
 		*flags |= F_MINUS;
+		if (*flags & F_ZERO)
+			*flags ^= F_ZERO;
+	}
 	else if (**format == '+')
 		*flags |= F_PLUS;
 	else if (**format == ' ')
 		*flags |= F_SPACE;
 	else if (**format == '#')
 		*flags |= F_HASH;
-	else if (**format == '0')
+	else if (**format == '0' && !(*flags & F_MINUS))
 		*flags |= F_ZERO;
 	++(*format);
 }
@@ -59,16 +63,16 @@ static void		get_precision(const char **format, va_list *argp, t_frmt *prm)
 	++(*format);
 	if (**format == '*')
 	{
-		prm->precision = va_arg(*argp, int) + 1;
+		prm->precision = va_arg(*argp, int);
 		++(*format);
 	}
 	else
 	{
-		prm->precision = ft_atoi(*format) + 1;
+		prm->precision = ft_atoi(*format);
 		while (**format >= '0' && **format <= '9')
 			++(*format);
 	}
-	if (prm->precision <= 0)
+	if (prm->precision < 0)
 		prm->precision = 1;
 	else
 		prm->flags |= F_PREC;
@@ -94,7 +98,7 @@ static void		get_width(const char **format, va_list *argp, t_frmt *prm)
 	}
 }
 
-void			parse_params(const char **format, va_list *argp, t_frmt prm)
+int				parse_params(const char **format, va_list *argp, t_frmt prm)
 {
 	while (!SPEC(**format))
 	{
@@ -106,19 +110,14 @@ void			parse_params(const char **format, va_list *argp, t_frmt prm)
 			get_precision(format, argp, &prm);
 		else if (MOD(**format))
 			get_mod(format, &prm);
+		else if (**format)
+			return (process_c(*(*format)++, &prm));
 		else
-		{
-			if (**format)
-			{
-				process_c(**format, &prm);
-				++(*format);
-			}
-			return ;
-		}
+			return (0);
 	}
 	prm.spec = **format;
 	if (**format == 'D' || **format == 'U' || **format == 'O')
 		prm.mod = J;
 	++(*format);
-	process_format(argp, &prm);
+	return (process_format(argp, &prm));
 }
