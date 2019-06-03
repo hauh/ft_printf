@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   process_feg.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: smorty <smorty@student.21school.ru>        +#+  +:+       +#+        */
+/*   By: smorty <smorty@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/12 18:18:09 by smorty            #+#    #+#             */
-/*   Updated: 2019/05/29 20:43:02 by smorty           ###   ########.fr       */
+/*   Updated: 2019/06/03 23:25:02 by smorty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,71 +37,139 @@ int		get_exponent(char *out)
 	return (e);
 }
 
-static void comb(char *power, char *p_end)
+static int *multiply(int *a, int *b, int size_a, int size_b)
 {
-	while (p_end >= power)
+	int *result;
+	int size;
+	int i;
+	int j;
+
+	size = size_a + size_b + 1;
+	result = (int *)malloc(sizeof(int) * (size + 1));
+	ft_bzero(result, sizeof(int) * (size + 1));
+	i = 0;
+	while (i < size_a)
 	{
-		while (*p_end > 9)
+		j = 0;
+		while (j < size_b)
 		{
-			*p_end -= 10;
-			++(*(p_end - 1));
+			result[1 + i + j] += a[i] * b[j];
+			++j;
 		}
-		--p_end;
+		++i;
 	}
+	while (--size)
+		if (result[size] > 9)
+		{
+			result[size - 1] += result[size] / 10;
+			result[size] %= 10;
+		}
+	free(a);
+	return (result);
 }
 
-void pwr2(char *dot, int pwr)
+static int new_size(int **result, int len)
 {
-	char power[pwr / 2 + 2];
-	char *p;
-	char *p_end;
+	int *new;
+	int i;
+	int j;
 
-	ft_bzero(power, pwr / 2 + 2);
-	p_end = power + pwr / 2 + 1;
-	*(power + pwr / 2) = 1;
-	while (pwr)
+	i = 0;
+	while (!(*result)[i])
+		++i;
+	new = (int *)malloc(sizeof(int) * (len - i));
+	j = 0;
+	while (i < len)
 	{
-		p = power;
-		while (p < p_end)
-			*p++ *= 2;
-		comb(power, p_end);
-		--pwr;
+		*(new + j) = (*result)[i];
+		++j;
+		++i;
 	}
-	p = dot - 1;
-	while (p_end >= power)
-	{
-		--p_end;
-		*p += *p_end;
-		--p;
-	}
-	comb(p, dot - 1);
+	free(*result);
+	*result = new;
+	return (j);
 }
 
-void pwr2neg(char *dot, int pwr)
+static int *power2pos(int power, int *len_r)
 {
-	char power[pwr + 1];
-	char *p;
-	char *p_end;
+	int *result;
+	int *pwr;
+	int len_p;
 
-	ft_bzero(power, pwr + 1);
-	p_end = power + pwr;
-	*(power + pwr - 1) = 1;
-	while (pwr)
+	result = (int *)malloc(sizeof(int));
+	*result = 1;
+	*len_r = 1;
+	pwr = (int *)malloc(sizeof(int));
+	*pwr = 2;
+	len_p = 1;
+	while (power)
 	{
-		p = power;
-		while (p < p_end)
-			*p++ *= 5;
-		comb(power, p_end);
-		--pwr;
+		if (power & 1)
+		{
+			result = multiply(result, pwr, *len_r, len_p);
+			*len_r = new_size(&result, *len_r + len_p);
+		}
+		pwr = multiply(pwr, pwr, len_p, len_p);
+		len_p = new_size(&pwr, len_p * 2);
+		power >>= 1;
 	}
-	p = power;
-	while (p < p_end)
+	free(pwr);
+	return (result);
+}
+
+static int	*power2neg(int power, int *len_r)
+{
+	int *result;
+	int *pwr;
+	int len_p;
+
+	result = (int *)malloc(sizeof(int));
+	*result = 1;
+	*len_r = 1;
+	pwr = (int *)malloc(sizeof(int));
+	*pwr = 5;
+	len_p = 1;
+	while (power)
 	{
-		*dot += *p;
-		++dot;
-		++p;
+		if (power & 1)
+		{
+			result = multiply(result, pwr, *len_r, len_p);
+			*len_r += len_p;
+		}
+		pwr = multiply(pwr, pwr, len_p, len_p);
+		len_p *= 2;
+		power >>= 1;
 	}
-	comb(dot - (p_end - &power[0]), dot);
+	free(pwr);
+	return (result);
+}
+
+static void power2(char *dot, int power)
+{
+	int *result;
+	int len;
+
+	result = power < 0 ? power2neg(-power, &len) : power2pos(power, &len);
+	dot += (power < 0 ? len - 1 : -1);
+	result += len - 1;
+	while (len--)
+	{
+		*dot += *result;
+		if (*dot > 9 && *dot != '.')
+		{
+			*dot -= 10;
+			++*(dot - 1);
+		}
+		--dot;
+		--result;
+	}
+	while (*dot > 9)
+	{
+		*dot -= 10;
+		--dot;
+		++*dot;
+	}
+	free(result + 1);
 }
 
 void round_float(char *out, char *dot, char *end)
@@ -202,25 +270,25 @@ void *ftoa(t_ld *nb, t_frmt *prm)
 	int		size;
 	int		exponent;
 
-	exponent = nb->exponent;
-	size = MAX(65, ABS(exponent)) + prm->precision + 7;
-	out = (char *)malloc(sizeof(char) * size * 2);
+	size = MAX(65, ABS(nb->exponent)) + prm->precision + 7;
+	out = (char *)malloc(sizeof(int) * size * 2);
 	out_end = out + size;
 	ft_bzero(out, size);
-	dot = out + (exponent > 0 ? exponent : 2);
+	dot = out + (nb->exponent > 0 ? nb->exponent : 2);
 	*dot = '.';
-	size = 63;
-	while (size >= 0)
+	size = 0;
+	exponent = nb->exponent - 63;
+	while (size < 64)
 	{
 		if (nb->mantissa & (1L << size))
-			exponent >= 0 ? pwr2(dot, exponent) : pwr2neg(dot + 1, -exponent);
-		--exponent;
-		--size;
+			power2(dot, exponent);
+		++exponent;
+		++size;
 	}
 	while (out_end >= out)
 		*out_end-- += '0';
 	*dot = '.';
-	return(out);
+	return (out);
 }
 
 int process_feg(t_ld *nb, t_frmt *prm)
@@ -228,6 +296,7 @@ int process_feg(t_ld *nb, t_frmt *prm)
 	char	*out0;
 	char	*out;
 	char	*dot;
+	char	*width;
 	int		spec;
 	int		e;
 
@@ -269,7 +338,11 @@ int process_feg(t_ld *nb, t_frmt *prm)
 		--out;
 	out -= prefix_feg(out - 1, nb->sign, prm->flags);
 	prm->len = ft_strlen(out);
-	to_print(out, make_width(prm), prm);
+	width = NULL;
+	if (prm->width > prm->len)
+		if (!(width = make_width(prm)))
+			return (g_ftprintf.error = -1);
+	to_print(out, width, prm);
 	free(out0);
 	return (0);
 }

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   process_float.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: smorty <smorty@student.21school.ru>        +#+  +:+       +#+        */
+/*   By: smorty <smorty@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/28 15:37:10 by smorty            #+#    #+#             */
-/*   Updated: 2019/05/29 20:43:45 by smorty           ###   ########.fr       */
+/*   Updated: 2019/06/01 15:18:42 by smorty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,19 +37,15 @@ void		suffix_float(char *out, int e, int spec)
 
 	*out++ = spec + (spec == 'a' || spec == 'A') * 15;
 	*out++ = (e < 0 ? '-' : '+');
-	if (!e)
-	{
+	if (e < 0)
+		e = ~e + 1;
+	if (e < 10 && spec != 'a' && spec != 'A')
 		*out++ = '0';
-		if (spec != 'a' && spec != 'A')
-			*out++ = '0';
-	}
+	if (!e)
+		*out++ = '0';
 	else
 	{
-		if (e < 0)
-			e = ~e + 1;
 		r = 1;
-		if (e < 10 && spec != 'a' && spec != 'A')
-			*out++ = '0';
 		while (e)
 		{
 			r = r * 10 + e % 10;
@@ -81,8 +77,8 @@ int			process_float(va_list *argp, t_frmt *prm)
 	if (nb.exponent == -0x4000)
 		return (nan_or_inf(&nb, prm));
 	if ((prm->spec >= 'f' && prm->spec <= 'g') || (prm->spec >= 'F' && prm->spec <= 'G'))
-		process_feg(&nb, prm);
+		return (process_feg(&nb, prm));
 	else if (prm->spec == 'a' || prm->spec == 'A')
-		process_a(nb_union.l, nb.sign, prm);
+		return (process_a(nb_union.l, nb.sign, prm));
 	return (0);
 }
