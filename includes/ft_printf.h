@@ -6,7 +6,7 @@
 /*   By: smorty <smorty@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/02 14:08:11 by smorty            #+#    #+#             */
-/*   Updated: 2019/05/31 20:19:32 by smorty           ###   ########.fr       */
+/*   Updated: 2019/06/02 20:36:50 by smorty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,6 +35,7 @@
 # define F_ZERO 32
 # define F_LONGD 64
 
+# define P {9, 2, 2, 3, 3, 7, 2, 0, 3, 6, 8, 5, 4, 7, 7, 5, 8, 0, 8}
 # define MAX(a, b) (a > b ? a : b)
 # define MIN(a, b) (a < b ? a : b)
 # define ABS(x) (x < 0 ? -x : x)
@@ -55,6 +56,12 @@ enum			e_modifiers
 {
 	NO, HH, H, L, LL, Z, J,
 };
+
+typedef struct	s_int_str
+{
+	int *nbr;
+	int size;
+}				t_int_str;
 
 typedef struct	s_output
 {

@@ -6,7 +6,7 @@
 /*   By: smorty <smorty@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/04 16:27:53 by smorty            #+#    #+#             */
-/*   Updated: 2019/05/31 23:20:57 by smorty           ###   ########.fr       */
+/*   Updated: 2019/06/01 13:10:30 by smorty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,7 +74,7 @@ static int	process_d_mod(intmax_t n, t_frmt *prm)
 int			process_d(va_list *argp, t_frmt *prm)
 {
 	if (prm->flags & F_ZERO && prm->width > prm->precision)
-			prm->precision = prm->width - 1;
+		prm->precision = prm->width - 1;
 	if (prm->mod == HH)
 		return (process_d_mod((char)va_arg(*argp, int), prm));
 	else if (prm->mod == H)
