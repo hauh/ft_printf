@@ -6,7 +6,7 @@
 /*   By: smorty <smorty@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/02 14:08:11 by smorty            #+#    #+#             */
-/*   Updated: 2019/06/02 20:36:50 by smorty           ###   ########.fr       */
+/*   Updated: 2019/06/04 23:02:23 by smorty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,12 +27,12 @@
 # define FLAG(c) (c == '-' || c == '+' || c == ' ' || c == '#' || c == '0')
 # define MOD(c) (c == 'h' || c == 'l' || c == 'j' || c == 'z' || c == 'L')
 
-# define F_PREC 1
+# define F_HASH 1
 # define F_MINUS 2
 # define F_PLUS 4
 # define F_SPACE 8
-# define F_HASH 16
-# define F_ZERO 32
+# define F_ZERO 16
+# define F_PREC 32
 # define F_LONGD 64
 
 # define P {9, 2, 2, 3, 3, 7, 2, 0, 3, 6, 8, 5, 4, 7, 7, 5, 8, 0, 8}
@@ -110,15 +110,15 @@ int				process_c(const wchar_t c, t_frmt *prm);
 int				process_s(const char *s, t_frmt *prm);
 int				process_cs(va_list *argp, t_frmt *prm);
 int				process_float(va_list *argp, t_frmt *prm);
-int				process_feg(t_ld *nb, t_frmt *prm);
 int				process_a(long double n, int sign, t_frmt *prm);
-void			suffix_float(char *out, int e, int spec);
+int				process_feg(char *out, t_frmt *prm, int sign);
 int				unicode(wchar_t c);
-long double		round_f(long double n, int precision);
-void			print_buf(void);
+void			suffix_float(char *out, int e, int spec);
+void			power2(char *dot, int power);
 void			char_to_buf(char c, int n);
 void			string_to_buf(const char *s, const char *end);
 char			*make_width(t_frmt *prm);
 void			to_print(char *out, char *width, t_frmt *prm);
+void			print_buf(void);
 
 #endif
