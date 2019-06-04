@@ -6,7 +6,7 @@
 /*   By: smorty <smorty@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/28 15:37:10 by smorty            #+#    #+#             */
-/*   Updated: 2019/06/01 15:18:42 by smorty           ###   ########.fr       */
+/*   Updated: 2019/06/04 22:55:01 by smorty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,10 +60,40 @@ void		suffix_float(char *out, int e, int spec)
 	*out = 0;
 }
 
+static char	*ftoa(t_ld *nb, t_frmt *prm)
+{
+	char	*dot;
+	char	*out;
+	char	*out_end;
+	int		size;
+	int		exponent;
+
+	exponent = nb->exponent;
+	size = MAX(65, ABS(exponent)) + prm->precision + 7;
+	out = (char *)malloc(sizeof(int) * (size + 1));
+	ft_bzero(out, sizeof(int) * (size + 1));
+	out_end = out + size;
+	dot = out + (exponent > 0 ? exponent : 2);
+	*dot = '.';
+	size = 63;
+	while (size >= 0)
+	{
+		if (nb->mantissa & (1L << size))
+			power2(dot, exponent);
+		--exponent;
+		--size;
+	}
+	while (out_end >= out)
+		*out_end-- += '0';
+	*dot = '.';
+	return (out);
+}
+
 int			process_float(va_list *argp, t_frmt *prm)
 {
-	t_bits		nb_union;
-	t_ld		nb;
+	t_bits	nb_union;
+	t_ld	nb;
+	char	*out;
 
 	if (!(prm->flags & F_PREC))
 		prm->precision = 6;
@@ -76,9 +106,8 @@ int			process_float(va_list *argp, t_frmt *prm)
 	nb.sign = nb_union.lsh[4] >> 15;
 	if (nb.exponent == -0x4000)
 		return (nan_or_inf(&nb, prm));
-	if ((prm->spec >= 'f' && prm->spec <= 'g') || (prm->spec >= 'F' && prm->spec <= 'G'))
-		return (process_feg(&nb, prm));
-	else if (prm->spec == 'a' || prm->spec == 'A')
+	if (prm->spec == 'a' || prm->spec == 'A')
 		return (process_a(nb_union.l, nb.sign, prm));
-	return (0);
+	out = ftoa(&nb, prm);
+	return (process_feg(out, prm, nb.sign));
 }
