@@ -6,7 +6,7 @@
 /*   By: smorty <smorty@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/14 20:24:09 by smorty            #+#    #+#             */
-/*   Updated: 2019/05/31 23:21:04 by smorty           ###   ########.fr       */
+/*   Updated: 2019/06/05 16:33:37 by smorty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,17 @@ static void	btoa(char **out, uintmax_t n, int *precision)
 		--(*out);
 		--(*precision);
 	}
+}
+
+static int	prefix_b(char *out, int n_is_zero, t_frmt *prm)
+{
+	if (!n_is_zero && prm->flags & F_HASH)
+	{
+		*out-- = prm->spec;
+		*out = '0';
+		return (1);
+	}
+	return (-1);
 }
 
 static int	process_b_mod(uintmax_t n, t_frmt *prm)
@@ -40,11 +51,7 @@ static int	process_b_mod(uintmax_t n, t_frmt *prm)
 		btoa(&out, n, &prm->precision);
 	while (prm->precision-- > 0)
 		*out-- = '0';
-	if (n && prm->flags & F_HASH)
-	{
-		*out-- = prm->spec;
-		*out = '0';
-	}
+	out -= prefix_b(out, (!n), prm);
 	prm->len = ft_strlen(out);
 	width = NULL;
 	if (prm->width > prm->len)

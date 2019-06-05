@@ -6,24 +6,26 @@
 /*   By: smorty <smorty@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/02 14:08:11 by smorty            #+#    #+#             */
-/*   Updated: 2019/06/04 23:02:23 by smorty           ###   ########.fr       */
+/*   Updated: 2019/06/05 20:23:18 by smorty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef FT_PRINTF_H
 # define FT_PRINTF_H
 
-# include "libft.h"
 # include <stdarg.h>
 # include <stdint.h>
 # include <wchar.h>
+# include "libft.h"
 
 # define S_INT(c) (c == 'i' || c == 'd' || c == 'D' || c == 'u' || c == 'U')
-# define S_BAS(c) (c == 'o' || c == 'O' || c == 'x' || c == 'X' || c == 'b' || c == 'B')
-# define S_REA(c) (c == 'f' || c == 'F' || c == 'e' || c == 'E' || c == 'g' || c == 'G' || c == 'a' || c == 'A')
-# define S_CHA(c) (c == 'c'	|| c == 'C' || c == 's' || c == 'S')
-# define S_MSC(c) (c == 'p' || c == 'n')
-# define SPEC(c) (S_INT(c) || S_BAS(c) || S_REA(c) || S_CHA(c) || S_MSC(c))
+# define S_BASE(c) (c == 'o' || c == 'O' || c == 'x' || c == 'X')
+# define S_FLOAT1(c) (c == 'f' || c == 'e' || c == 'g' || c == 'a')
+# define S_FLOAT2(c) (c == 'F' || c == 'E' || c == 'G' || c == 'A')
+# define S_FLOAT(c) (S_FLOAT1(c) || S_FLOAT2(c))
+# define S_CHARS(c) (c == 'c' || c == 'C' || c == 's' || c == 'S')
+# define S_MSC(c) (c == 'p' || c == 'n' || c == 'b' || c == 'B')
+# define SPEC(c) (S_INT(c) || S_BASE(c) || S_FLOAT(c) || S_CHARS(c) || S_MSC(c))
 # define FLAG(c) (c == '-' || c == '+' || c == ' ' || c == '#' || c == '0')
 # define MOD(c) (c == 'h' || c == 'l' || c == 'j' || c == 'z' || c == 'L')
 
@@ -35,11 +37,9 @@
 # define F_PREC 32
 # define F_LONGD 64
 
-# define P {9, 2, 2, 3, 3, 7, 2, 0, 3, 6, 8, 5, 4, 7, 7, 5, 8, 0, 8}
 # define MAX(a, b) (a > b ? a : b)
 # define MIN(a, b) (a < b ? a : b)
 # define ABS(x) (x < 0 ? -x : x)
-# define ODD(x, spec) ((x < spec && x % 2 == 1) || x == spec + 1 || x == spec + 3 || x == spec + 5)
 # define CHECK_BUFF(x) (g_ftprintf.len + x > BUFF_SIZE ? print_buf() : 0)
 
 # define COLOR_RED     "\x1b[31m"
@@ -52,17 +52,6 @@
 
 # define BUFF_SIZE 128
 
-enum			e_modifiers
-{
-	NO, HH, H, L, LL, Z, J,
-};
-
-typedef struct	s_int_str
-{
-	int *nbr;
-	int size;
-}				t_int_str;
-
 typedef struct	s_output
 {
 	char				buf[BUFF_SIZE];
@@ -72,28 +61,20 @@ typedef struct	s_output
 	int					error;
 }				t_output;
 
+typedef enum	e_modifier
+{
+	NO, HH, H, L, LL, Z, J
+}				t_modifier;
+
 typedef struct	s_frmt
 {
-	enum e_modifiers	mod;
+	t_modifier			mod;
 	ssize_t				len;
 	int					flags;
 	int					precision;
 	int					width;
 	int					spec;
 }				t_frmt;
-
-typedef union	u_bits
-{
-	long double			l;
-	short				lsh[5];
-}				t_bits;
-
-typedef struct	s_ld
-{
-	uint64_t			mantissa: 64;
-	int					exponent: 15;
-	int					sign: 1;
-}				t_ld;
 
 extern t_output	g_ftprintf;
 
@@ -110,11 +91,7 @@ int				process_c(const wchar_t c, t_frmt *prm);
 int				process_s(const char *s, t_frmt *prm);
 int				process_cs(va_list *argp, t_frmt *prm);
 int				process_float(va_list *argp, t_frmt *prm);
-int				process_a(long double n, int sign, t_frmt *prm);
-int				process_feg(char *out, t_frmt *prm, int sign);
 int				unicode(wchar_t c);
-void			suffix_float(char *out, int e, int spec);
-void			power2(char *dot, int power);
 void			char_to_buf(char c, int n);
 void			string_to_buf(const char *s, const char *end);
 char			*make_width(t_frmt *prm);
