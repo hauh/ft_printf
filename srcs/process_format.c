@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   process_format.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: smorty <smorty@student.21school.ru>        +#+  +:+       +#+        */
+/*   By: smorty <smorty@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/04 17:02:25 by smorty            #+#    #+#             */
-/*   Updated: 2019/05/31 18:04:45 by smorty           ###   ########.fr       */
+/*   Updated: 2019/06/05 20:24:29 by smorty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,9 +23,9 @@ static int	process_n(int *p)
 
 int			process_format(va_list *argp, t_frmt *prm)
 {
-	if (S_CHA(prm->spec))
+	if (S_CHARS(prm->spec))
 		return (process_cs(argp, prm));
-	else if (S_REA(prm->spec))
+	else if (S_FLOAT(prm->spec))
 		return (process_float(argp, prm));
 	else
 	{

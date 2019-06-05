@@ -6,30 +6,12 @@
 /*   By: smorty <smorty@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/28 15:37:10 by smorty            #+#    #+#             */
-/*   Updated: 2019/06/04 22:55:01 by smorty           ###   ########.fr       */
+/*   Updated: 2019/06/05 19:58:06 by smorty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_printf.h"
-
-static int	nan_or_inf(t_ld *nb, t_frmt *prm)
-{
-	if (prm->flags & F_PREC)
-		(prm->flags ^= F_PREC);
-	if (prm->flags & F_ZERO)
-		(prm->flags ^= F_ZERO);
-	if (!(nb->mantissa << 1))
-	{
-		if (nb->sign)
-			return (process_s((prm->spec > 96 ? "-inf" : "-INF"), prm));
-		else if (prm->flags & F_PLUS)
-			return (process_s((prm->spec > 96 ? "+inf" : "+INF"), prm));
-		else if (prm->flags & F_SPACE)
-			return (process_s((prm->spec > 96 ? " inf" : " INF"), prm));
-		return (process_s((prm->spec > 96 ? "inf" : "INF"), prm));
-	}
-	return (process_s((prm->spec > 96 ? "nan" : "NAN"), prm));
-}
+#include "floats.h"
 
 void		suffix_float(char *out, int e, int spec)
 {
@@ -58,6 +40,25 @@ void		suffix_float(char *out, int e, int spec)
 		}
 	}
 	*out = 0;
+}
+
+static int	nan_or_inf(t_ld *nb, t_frmt *prm)
+{
+	if (prm->flags & F_PREC)
+		(prm->flags ^= F_PREC);
+	if (prm->flags & F_ZERO)
+		(prm->flags ^= F_ZERO);
+	if (!(nb->mantissa << 1))
+	{
+		if (nb->sign)
+			return (process_s((prm->spec > 96 ? "-inf" : "-INF"), prm));
+		else if (prm->flags & F_PLUS)
+			return (process_s((prm->spec > 96 ? "+inf" : "+INF"), prm));
+		else if (prm->flags & F_SPACE)
+			return (process_s((prm->spec > 96 ? " inf" : " INF"), prm));
+		return (process_s((prm->spec > 96 ? "inf" : "INF"), prm));
+	}
+	return (process_s((prm->spec > 96 ? "nan" : "NAN"), prm));
 }
 
 static char	*ftoa(t_ld *nb, t_frmt *prm)
@@ -89,11 +90,33 @@ static char	*ftoa(t_ld *nb, t_frmt *prm)
 	return (out);
 }
 
+static int	get_exponent(char *out)
+{
+	int e;
+
+	e = 0;
+	while (*out == '0')
+		++out;
+	if (*out++ == '.')
+	{
+		--e;
+		while (*out++ == '0')
+			--e;
+		if (!*out)
+			return (0);
+	}
+	else
+		while (*out++ != '.')
+			++e;
+	return (e);
+}
+
 int			process_float(va_list *argp, t_frmt *prm)
 {
 	t_bits	nb_union;
 	t_ld	nb;
 	char	*out;
+	int		e;
 
 	if (!(prm->flags & F_PREC))
 		prm->precision = 6;
@@ -109,5 +132,6 @@ int			process_float(va_list *argp, t_frmt *prm)
 	if (prm->spec == 'a' || prm->spec == 'A')
 		return (process_a(nb_union.l, nb.sign, prm));
 	out = ftoa(&nb, prm);
-	return (process_feg(out, prm, nb.sign));
+	e = get_exponent(out);
+	return (process_efg(out, prm, e, nb.sign));
 }

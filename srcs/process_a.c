@@ -6,11 +6,12 @@
 /*   By: smorty <smorty@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/26 18:29:52 by smorty            #+#    #+#             */
-/*   Updated: 2019/05/31 23:21:45 by smorty           ###   ########.fr       */
+/*   Updated: 2019/06/05 19:58:34 by smorty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_printf.h"
+#include "floats.h"
 
 static int	get_exponent(long double *n, int flag_ld)
 {
