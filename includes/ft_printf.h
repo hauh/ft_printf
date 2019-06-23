@@ -6,7 +6,7 @@
 /*   By: smorty <smorty@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/02 14:08:11 by smorty            #+#    #+#             */
-/*   Updated: 2019/06/05 20:23:18 by smorty           ###   ########.fr       */
+/*   Updated: 2019/06/23 19:35:53 by smorty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,7 @@
 # define MAX(a, b) (a > b ? a : b)
 # define MIN(a, b) (a < b ? a : b)
 # define ABS(x) (x < 0 ? -x : x)
-# define CHECK_BUFF(x) (g_ftprintf.len + x > BUFF_SIZE ? print_buf() : 0)
+# define CHECK_BUFF(x) (g_ftprintf.len + x > BUFF_SIZE_PF ? print_buf() : 0)
 
 # define COLOR_RED     "\x1b[31m"
 # define COLOR_GREEN   "\x1b[32m"
@@ -50,11 +50,11 @@
 # define COLOR_CYAN    "\x1b[36m"
 # define COLOR_RESET   "\x1b[0m"
 
-# define BUFF_SIZE 128
+# define BUFF_SIZE_PF 128
 
 typedef struct	s_output
 {
-	char				buf[BUFF_SIZE];
+	char				buf[BUFF_SIZE_PF];
 	int					len;
 	int					printed;
 	int					fd;
