@@ -6,7 +6,7 @@
 /*   By: smorty <smorty@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/09 17:25:04 by smorty            #+#    #+#             */
-/*   Updated: 2019/05/31 22:32:40 by smorty           ###   ########.fr       */
+/*   Updated: 2019/06/23 19:35:53 by smorty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ void	char_to_buf(char c, int n)
 	{
 		*(g_ftprintf.buf + g_ftprintf.len) = c;
 		++g_ftprintf.len;
-		if (g_ftprintf.len == BUFF_SIZE)
+		if (g_ftprintf.len == BUFF_SIZE_PF)
 			print_buf();
 		--n;
 	}
@@ -42,7 +42,7 @@ void	string_to_buf(const char *s, const char *end)
 		*(g_ftprintf.buf + g_ftprintf.len) = *s;
 		++s;
 		++g_ftprintf.len;
-		if (g_ftprintf.len == BUFF_SIZE)
+		if (g_ftprintf.len == BUFF_SIZE_PF)
 			print_buf();
 	}
 }

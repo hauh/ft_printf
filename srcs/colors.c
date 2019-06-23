@@ -6,7 +6,7 @@
 /*   By: smorty <smorty@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/19 17:37:46 by smorty            #+#    #+#             */
-/*   Updated: 2019/06/15 20:25:12 by smorty           ###   ########.fr       */
+/*   Updated: 2019/06/23 19:35:53 by smorty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 static int	set_color(char *color, int color_len)
 {
-	if (BUFF_SIZE >= 5)
+	if (BUFF_SIZE_PF >= 5)
 	{
 		CHECK_BUFF(5);
 		string_to_buf(color, color + 5);
