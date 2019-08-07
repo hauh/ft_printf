@@ -6,7 +6,7 @@
 #    By: smorty <smorty@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2019/05/04 18:16:10 by smorty            #+#    #+#              #
-#    Updated: 2019/06/05 18:16:18 by smorty           ###   ########.fr        #
+#    Updated: 2019/08/07 21:37:28 by smorty           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -29,11 +29,15 @@ CFLAGS = -Wall -Werror -Wextra
 all: $(NAME)
 
 $(NAME): $(OBJ)
-	@ar rc $@ $(OBJ)
-	ranlib $@
+	@ar -rcs $@ $(OBJ)
+	@printf "\r\e[Jar \e[32m$(notdir $@)\e[0m"
+	@ranlib $@
+	@printf "\r\e[Jranlib \e[32m$(notdir $@)\e[0m"
+	@printf "\r\e[J\e[32m$(notdir $@)\e[0m done!\n\e[?25h"
 
 $(SRCDIR)/%.o: $(SRCDIR)/%.c
 	@$(CC) -I./includes $(CFLAGS) -c -o $@ $<
+	@printf "\r\e[?25l\e[Jcompiling \e[32m$(notdir $^)\e[0m"
 
 clean:
 	@rm -f $(OBJ)
