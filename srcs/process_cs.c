@@ -6,7 +6,7 @@
 /*   By: smorty <smorty@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/03 19:49:39 by smorty            #+#    #+#             */
-/*   Updated: 2019/06/05 19:51:35 by smorty           ###   ########.fr       */
+/*   Updated: 2019/09/04 23:39:56 by smorty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,6 +79,7 @@ static int	strsize(const wchar_t *s, t_frmt *prm)
 static int	process_ls(const wchar_t *s, t_frmt *prm)
 {
 	int width;
+	int bytes;
 
 	if (!s)
 		process_s(NULL, prm);
@@ -90,8 +91,9 @@ static int	process_ls(const wchar_t *s, t_frmt *prm)
 			char_to_buf((prm->flags & F_ZERO ? '0' : ' '), width);
 		while (prm->len > 0)
 		{
-			if (prm->len == (prm->len -= unicode(*s)))
+			if (!(bytes = unicode(*s)))
 				return (g_ftprintf.error = -1);
+			prm->len -= bytes;
 			++s;
 		}
 		if ((prm->flags & F_MINUS) && width > 0)
