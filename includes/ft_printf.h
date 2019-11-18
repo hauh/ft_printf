@@ -6,7 +6,7 @@
 /*   By: smorty <smorty@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/02 14:08:11 by smorty            #+#    #+#             */
-/*   Updated: 2019/06/23 19:35:53 by smorty           ###   ########.fr       */
+/*   Updated: 2019/11/18 22:26:00 by smorty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@
 # include <stdarg.h>
 # include <stdint.h>
 # include <wchar.h>
-# include "libft.h"
+# include "libft_funcs.h"
 
 # define S_INT(c) (c == 'i' || c == 'd' || c == 'D' || c == 'u' || c == 'U')
 # define S_BASE(c) (c == 'o' || c == 'O' || c == 'x' || c == 'X')

@@ -6,11 +6,11 @@
 /*   By: smorty <smorty@student.21school.ru>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/04 20:55:27 by smorty            #+#    #+#             */
-/*   Updated: 2019/05/17 17:45:45 by smorty           ###   ########.fr       */
+/*   Updated: 2019/11/18 22:26:58 by smorty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft.h"
+#include "libft_funcs.h"
 
 size_t	ft_strlen(const char *s)
 {
